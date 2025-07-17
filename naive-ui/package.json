@@ -1,0 +1,8 @@
+{
+  "name": "@workspace-hmeqo/naive-ui",
+  "version": "0.1.0",
+  "dependencies": {
+    "@bg-dev/nuxt-naiveui": "2.0.0-rc.5",
+    "naive-ui": "^2.42.0"
+  }
+}

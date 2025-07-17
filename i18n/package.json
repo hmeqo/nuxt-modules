@@ -1,0 +1,7 @@
+{
+  "name": "@workspace-hmeqo/i18n",
+  "version": "0.1.0",
+  "dependencies": {
+    "@nuxtjs/i18n": "9.5.6"
+  }
+}

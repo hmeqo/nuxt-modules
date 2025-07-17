@@ -1,0 +1,9 @@
+{
+  "name": "@workspace-hmeqo/varlet",
+  "version": "0.1.0",
+  "dependencies": {
+    "@varlet/nuxt": "^0.1.5",
+    "@varlet/ui": "^3.11.0",
+    "zod": "^4.0.2"
+  }
+}
