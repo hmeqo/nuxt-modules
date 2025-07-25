@@ -10,31 +10,28 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    nuxt.options.pwa = defu(
-      <PwaModuleOptions>{
-        registerType: 'autoUpdate',
-        manifest: {
-          name: 'App',
-          short_name: 'App',
-          theme_color: '#141414',
-          description: 'App',
-          icons: [
-            {
-              src: 'icon.png',
-              sizes: '512x512',
-              type: 'image/png'
-            }
-          ],
-          display: 'standalone'
-        },
-        registerWebManifestInRouteRules: true,
-        devOptions: {
-          enabled: false,
-          type: 'module'
-        }
+    nuxt.options.pwa = defu(nuxt.options.pwa, <PwaModuleOptions>{
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'App',
+        short_name: 'App',
+        theme_color: '#141414',
+        description: 'App',
+        icons: [
+          {
+            src: 'icon.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ],
+        display: 'standalone'
       },
-      nuxt.options.pwa
-    )
+      registerWebManifestInRouteRules: true,
+      devOptions: {
+        enabled: false,
+        type: 'module'
+      }
+    })
 
     await installModule('@vite-pwa/nuxt')
 

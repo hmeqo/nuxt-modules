@@ -1,6 +1,6 @@
 import { addComponentsDir, addImportsDir, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
-import { defu } from 'defu'
 import type { ModuleOptions } from '@nuxtjs/i18n'
+import { defu } from 'defu'
 
 export default defineNuxtModule({
   meta: {
@@ -10,19 +10,16 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    nuxt.options.i18n = defu(
-      <ModuleOptions>{
-        strategy: 'no_prefix',
-        detectBrowserLanguage: {
-          useCookie: false
-        },
-        bundle: {
-          optimizeTranslationDirective: false
-        },
-        lazy: true
+    nuxt.options.i18n = defu(nuxt.options.i18n, <ModuleOptions>{
+      strategy: 'no_prefix',
+      detectBrowserLanguage: {
+        useCookie: false
       },
-      nuxt.options.i18n
-    )
+      bundle: {
+        optimizeTranslationDirective: false
+      },
+      lazy: true
+    })
 
     await installModule('@nuxtjs/i18n')
 

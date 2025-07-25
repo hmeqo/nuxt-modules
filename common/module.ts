@@ -32,14 +32,12 @@ export default defineNuxtModule({
       '@nuxtjs/color-mode'
     ]
 
-    nuxt.options.colorMode = defu(
-      <ColorModeModuleOptions>{
-        classSuffix: '',
-        storage: 'cookie',
-        storageKey: 'color-mode'
-      },
-      nuxt.options.colorMode
-    )
+    // @ts-expect-error unknown type
+    nuxt.options.colorMode = defu(nuxt.options.colorMode, <ColorModeModuleOptions>{
+      classSuffix: '',
+      storage: 'cookie',
+      storageKey: 'color-mode'
+    })
 
     for (const module of modules) await installModule(module)
 

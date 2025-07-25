@@ -31,6 +31,8 @@ export const naiveDialogOptionPresets = {
 export function naiveCreateDialog(options: DialogOptions) {
   const { dialog } = useNaiveApi()
   const result = dialog.create({
+    class: 'border-card',
+    transformOrigin: 'center',
     negativeText: '取消',
     positiveText: '确认',
     maskClosable: true,

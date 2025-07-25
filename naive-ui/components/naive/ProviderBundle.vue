@@ -12,10 +12,10 @@ withDefaults(
 <template>
   <NLoadingBarProvider>
     <NaiveLoadingBar :navigation="loadingBarProps.navigation" />
-    <NNotificationProvider>
+    <NNotificationProvider container-class="[&>*>*>*>*>*]:border-card">
       <NaiveNotification />
       <NDialogProvider>
-        <NMessageProvider>
+        <NMessageProvider container-class="[&>*]:(border-card rounded)">
           <NModalProvider>
             <NaiveApiProvider>
               <slot />

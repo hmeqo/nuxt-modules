@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CardProps, ModalProps } from 'naive-ui';
+import type { CardProps, ModalProps } from 'naive-ui'
 
 const props = withDefaults(
   defineProps<{
@@ -49,6 +49,7 @@ function hasSegmented() {
     :close-on-esc="escClosable"
     draggable
     transform-origin="center"
+    bordered
     @mask-click="maskClosable && onClose()"
     @esc="emit('close')"
     @close="onClose"

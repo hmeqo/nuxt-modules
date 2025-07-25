@@ -1,23 +1,31 @@
 import dayjs from 'dayjs'
 import type { FormItemRule } from 'naive-ui'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ensureValid = (fn: (_: FormItemRule, value: any) => boolean): FormItemRule['validator'] => {
+  return (_, value) => {
+    if (value === null || value === undefined) return true
+    return fn(_, value)
+  }
+}
+
 export const naiveRulePresets = {
   length: (opts: { min?: number; max?: number }): FormItemRule => {
     if (opts.min !== undefined && opts.max !== undefined)
       return {
-        validator: (_, value) => value.length >= opts.min! && value.length <= opts.max!,
+        validator: ensureValid((_, value) => value.length >= opts.min! && value.length <= opts.max!),
         message: `长度应在 ${opts.min} 到 ${opts.max} 之间`,
         trigger: ['blur']
       }
     if (opts.max !== undefined)
       return {
-        validator: (_, value) => value.length <= opts.max!,
+        validator: ensureValid((_, value) => value.length <= opts.max!),
         message: `长度不能超过 ${opts.max}`,
         trigger: ['blur']
       }
     if (opts.min !== undefined)
       return {
-        validator: (_, value) => value.length >= opts.min!,
+        validator: ensureValid((_, value) => value.length >= opts.min!),
         message: `长度应该大于 ${opts.min}`,
         trigger: ['blur']
       }
@@ -45,17 +53,17 @@ export const naiveRulePresets = {
     throw new Error('min or max must be provided')
   },
   date: (): FormItemRule => ({
-    validator: (_, value) => value === null || dayjs(value).startOf('day') <= dayjs().startOf('day'),
+    validator: ensureValid((_, value) => value === null || dayjs(value).startOf('day') <= dayjs().startOf('day')),
     message: '日期不能大于今天',
     trigger: ['input', 'blur']
   }),
   datetime: (): FormItemRule => ({
-    validator: (_, value) => value === null || dayjs(value) <= dayjs(),
+    validator: ensureValid((_, value) => value === null || dayjs(value) <= dayjs()),
     message: '时间不能大于现在',
     trigger: ['input', 'blur']
   }),
   posNumber: (): FormItemRule => ({
-    validator: (_, value: number) => value >= 0,
+    validator: ensureValid((_, value: number) => value >= 0),
     message: '必须大于等于0',
     trigger: ['input', 'blur']
   }),
@@ -69,19 +77,19 @@ export const naiveRulePresets = {
   number: (opts: { min?: number; max?: number }): FormItemRule => {
     if (opts.min !== undefined && opts.max !== undefined)
       return {
-        validator: (_, value) => value >= opts.min! && value <= opts.max!,
+        validator: ensureValid((_, value) => value >= opts.min! && value <= opts.max!),
         message: `数值应在 ${opts.min} 到 ${opts.max} 之间`,
         trigger: ['blur']
       }
     if (opts.max !== undefined)
       return {
-        validator: (_, value) => value <= opts.max!,
+        validator: ensureValid((_, value) => value <= opts.max!),
         message: `数值不能超过 ${opts.max}`,
         trigger: ['blur']
       }
     if (opts.min !== undefined)
       return {
-        validator: (_, value) => value >= opts.min!,
+        validator: ensureValid((_, value) => value >= opts.min!),
         message: `数值应该大于 ${opts.min}`,
         trigger: ['blur']
       }

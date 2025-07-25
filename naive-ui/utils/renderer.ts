@@ -52,7 +52,7 @@ export const naiveRenderPopover =
         ...opts?.popoverProps
       },
       {
-        trigger: () => h('div', { class: 'n-base-select-option__content' }, node),
+        trigger: () => node,
         default: () => opts?.node?.(option) ?? `${option.label}`
       }
     )

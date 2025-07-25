@@ -19,57 +19,64 @@ export default <NaiveUiModuleOptions['themeConfig']>{
   },
   dark: {
     common: {
-      bodyColor: '#141414',
-      cardColor: '#121212',
-      modalColor: '#121212',
-      popoverColor: '#141414',
-      dividerColor: '#252525',
-      hoverColor: '#252525',
+      bodyColor: '#0a0a0a',
+      cardColor: '#0a0a0a',
+      modalColor: '#0a0a0a',
+      borderColor: '#262626',
+      popoverColor: '#0a0a0a',
+      dividerColor: '#262626',
+      hoverColor: '#262626',
       primaryColor: '#409EFF',
       primaryColorHover: '#66b1ff',
       primaryColorPressed: '#3a8ee6',
-      primaryColorSuppl: '#66b1ff'
+      primaryColorSuppl: '#66b1ff',
     },
     Layout: {
-      color: '#141414',
-      siderColor: '#121212',
-      headerColor: '#121212',
-      footerColor: '#141414'
+      color: '#0a0a0a',
+      siderColor: '#0a0a0a',
+      headerColor: '#0a0a0a',
+      footerColor: '#0a0a0a'
     },
     Notification: {
-      color: '#141414'
+      color: '#0a0a0a'
     },
     Message: {
-      colorSuccess: '#141414'
+      colorSuccess: '#0a0a0a'
     },
     DataTable: {
-      thColor: '#121212',
-      thColorHover: '#1a1a1a',
-      tdColor: '#121212',
-      tdColorHover: '#1a1a1a',
-      tdColorHoverModal: '#1a1a1a',
-      tdColorStriped: '#141414',
-      tdColorSorting: '#1a1a1a',
-      tdColorSortingModal: '#1a1a1a',
-      thColorHoverModal: '#1a1a1a',
-      thColorSorting: '#1a1a1a',
-      thColorSortingModal: '#1a1a1a'
+      // borderColor: '#262626',
+      // borderColorModal: '#262626',
+      // borderColorPopover: '#262626',
+      thColor: '#0a0a0a',
+      thColorHover: '#0a0a0a',
+      tdColor: '#0a0a0a',
+      tdColorHover: '#171717',
+      tdColorHoverModal: '#171717',
+      tdColorStriped: '#171717',
+      tdColorSorting: '#171717',
+      tdColorSortingModal: '#171717',
+      thColorHoverModal: '#171717',
+      thColorSorting: '#171717',
+      thColorSortingModal: '#171717'
     },
     Input: {
-      color: '#161616',
-      colorFocus: '#1a1a1a',
-      colorHover: '#1a1a1a',
+      color: '#111111',
+      colorFocus: '#111111',
+      colorHover: '#111111',
       iconColor: '#999999'
     },
-    Checkbox: {
-      color: '#161616'
+    Button: {
+      color: '#111111',
+      colorHover: '#111111'
     },
     InternalSelection: {
-      color: '#161616',
-      colorActive: '#1a1a1a'
+      color: '#111111'
     },
     Tooltip: {
-      color: '#1a1a1a'
+      color: '#0a0a0a'
+    },
+    Dropdown: {
+      color: '#0a0a0a'
     }
   }
 }
