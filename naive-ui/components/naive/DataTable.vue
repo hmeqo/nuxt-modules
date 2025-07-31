@@ -1,19 +1,20 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import type { DataTableColumns, DataTableRowData, DropdownProps } from 'naive-ui'
 
 const props = defineProps<{
   stateKey: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: DataTableColumns<any>
   menuOptions?: DropdownProps['options']
   loading?: boolean
   data?: DataTableRowData[]
   scrollX?: number
   rowForceActive?: boolean
+  rowClass?: (row: any, index: number) => string
+  extraRowProps?: (row: any, index: number) => Record<string, unknown>
 }>()
 const chosen = defineModel<unknown>('selected')
 const menuVisible = defineModel<boolean>('show-menu', { default: false })
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const checkedRowKeys = defineModel<any[]>('checked-row-keys', { default: () => [] })
 const selectedIndex = ref(0)
 
@@ -39,15 +40,19 @@ const showDropmenu = (row: unknown, index: number) => {
     :pagination="naiveGetPagination({ page, pageSize })"
     :row-props="
       (row, index) => ({
-        class: 'cursor-pointer',
-        style: (menuVisible || rowForceActive) && selectedIndex === index ? { '--n-merged-td-color': 'var(--n-merged-td-color-hover)' } : {},
+        class: rowClass?.(row, index),
+        style:
+          (menuVisible || rowForceActive) && selectedIndex === index
+            ? { '--n-merged-td-color': 'var(--n-merged-td-color-hover)' }
+            : {},
         onContextmenu: (e) => {
           e.preventDefault()
           if (menuVisible) return
           menuPosition.x = e.clientX
           menuPosition.y = e.clientY
           showDropmenu(row, index)
-        }
+        },
+        ...extraRowProps?.(row, index)
       })
     "
     :row-key="(row) => row.id"

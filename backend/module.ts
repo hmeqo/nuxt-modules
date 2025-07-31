@@ -6,10 +6,19 @@ export default defineNuxtModule({
     name: '@workspace-hmeqo/backend'
   },
 
+  hooks: {
+    'prepare:types': ({ references }) => {
+      references.push({
+        types: '@workspace-hmeqo/backend/types'
+      })
+    }
+  },
+
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     // Pass module options to runtimeConfig object
+    // @ts-expect-error unknown type
     nuxt.options.csurf = defu(nuxt.options.csurf, {
       https: false,
       cookieKey: 'csrftoken',
@@ -23,7 +32,7 @@ export default defineNuxtModule({
     addImportsDir(resolver.resolve('./composables'))
 
     // Add utils
-    addImportsDir(resolver.resolve('./utils'))
+    // addImportsDir(resolver.resolve('./utils'))
 
     addPlugin(resolver.resolve('./plugins/alova.ts'))
 

@@ -18,8 +18,8 @@ export const alovaInst = createAlova({
     method.config.credentials = 'include'
 
     Object.assign(method.config.headers, {
-      [useCsrf().headerName]: useCookie('csrftoken').value,
-      'Content-Type': method.config.headers['Content-Type'] ?? (method.meta?.multipart ? undefined : 'application/json')
+      [useCsrf().headerName]: useCookie('csrftoken').value
+      // 'Content-Type': method.config.headers['Content-Type'] ?? (method.meta?.multipart ? 'multipart/form-data' : 'application/json')
     })
 
     let data = method.data
@@ -31,7 +31,7 @@ export const alovaInst = createAlova({
       if (!(data instanceof FormData)) {
         const formData = new FormData()
         for (const [key, value] of Object.entries(data as Record<string, unknown>)) {
-          formData.append(key, toString(value))
+          formData.append(key, value instanceof Blob ? value : toString(value))
         }
         method.data = formData
       }

@@ -16,6 +16,16 @@ export const naiveDialogOptionPresets = {
     content: '确认保存?',
     type: 'info'
   },
+  submit: <DialogOptions>{
+    title: '提交数据',
+    content: '确认提交?',
+    type: 'info'
+  },
+  confirm: <DialogOptions>{
+    title: '确认操作',
+    content: '确认操作?',
+    type: 'info'
+  },
   logout: <DialogOptions>{
     title: '退出登录',
     content: '确认退出登录?',

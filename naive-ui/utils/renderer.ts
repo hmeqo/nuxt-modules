@@ -7,7 +7,7 @@ export function naiveRenderAction(text: string, onclick: () => void) {
   return () => h('a', { onclick }, text)
 }
 
-export function renderIcon(data: {
+export function naiveRenderIcon(data: {
   type?: unknown
   content?: string | VNode
   attr?: VNodeProps & Record<string, unknown>

@@ -11,12 +11,13 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // @ts-expect-error unknown type
     nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
       naiveui: <NaiveUiModuleOptions>{
         colorModePreferenceCookieName: 'color-mode',
-        colorModePreference: nuxt.options.colorMode.preference,
-        themeConfig: modern
+        // @ts-expect-error unknown type
+        colorModePreference: nuxt.options.naiveui?.colorModePreference || nuxt.options.colorMode.preference,
+        // @ts-expect-error unknown type
+        themeConfig: nuxt.options.naiveui?.themeConfig || modern
       }
     })
 
