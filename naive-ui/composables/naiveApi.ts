@@ -7,13 +7,13 @@ let cachedNaiveApi: {
   loadingBar: LoadingBarApi
 }
 
-export const useNaiveApi = (opts?: { refresh: boolean }) => {
+export const useNaiveApi = (opts?: { loadingBarDisabled?: boolean; refresh: boolean }) => {
   if (opts?.refresh) cachedNaiveApi = undefined as unknown as typeof cachedNaiveApi
   return (cachedNaiveApi ??= {
     message: useMessage(),
     dialog: useDialog(),
     notification: useNotification(),
-    loadingBar: isTauri
+    loadingBar: opts?.loadingBarDisabled
       ? {
           start: () => {},
           finish: () => {},

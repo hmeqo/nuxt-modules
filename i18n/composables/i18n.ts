@@ -4,13 +4,13 @@ let cachedI18n: Composer
 
 export const useCachedI18n = () => {
   cachedI18n ??= useI18n()
-  const { locale, availableLocales } = cachedI18n
+  const { locale, setLocale, availableLocales } = cachedI18n
 
   const langCookie = useLangCookie({ default: () => locale.value })
 
   if (langCookie.value) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (availableLocales.includes(langCookie.value as any)) locale.value = langCookie.value as any
+    if (availableLocales.includes(langCookie.value as any)) setLocale(langCookie.value) as any
     else langCookie.value = locale.value
   }
   return cachedI18n

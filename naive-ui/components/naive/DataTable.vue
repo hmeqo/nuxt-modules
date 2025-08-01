@@ -13,18 +13,18 @@ const props = defineProps<{
   rowClass?: (row: any, index: number) => string
   extraRowProps?: (row: any, index: number) => Record<string, unknown>
 }>()
-const chosen = defineModel<unknown>('selected')
+const selected = defineModel<unknown>('selected')
 const menuVisible = defineModel<boolean>('show-menu', { default: false })
 const checkedRowKeys = defineModel<any[]>('checked-row-keys', { default: () => [] })
-const selectedIndex = ref(0)
+const selectedIndex = ref<number>()
 
 const page = usePiniaState(`${props.stateKey}-page`, { default: () => 1 })
 const pageSize = usePiniaCache<number | undefined>(`${props.stateKey}-page-size`)
 
 const menuPosition = ref({ x: 0, y: 0 })
 const showDropmenu = (row: unknown, index: number) => {
-  chosen.value = row
   selectedIndex.value = index
+  selected.value = row
   menuVisible.value = true
 }
 </script>
