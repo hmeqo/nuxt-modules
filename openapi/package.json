@@ -1,0 +1,11 @@
+{
+  "name": "@workspace-hmeqo/openapi",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "openapi-typescript": "^7.9.1",
+    "openapi-typescript-codegen": "^0.29.0"
+  }
+}

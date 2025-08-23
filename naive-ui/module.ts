@@ -17,7 +17,7 @@ export default defineNuxtModule({
         // @ts-expect-error unknown type
         colorModePreference: nuxt.options.naiveui?.colorModePreference || nuxt.options.colorMode.preference,
         // @ts-expect-error unknown type
-        themeConfig: nuxt.options.naiveui?.themeConfig || modern
+        themeConfig: defu(nuxt.options.naiveui?.themeConfig || modern, { shared: { common: { fontFamily: '' } } })
       }
     })
 

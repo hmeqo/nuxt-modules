@@ -1,10 +1,12 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { defu } from 'defu'
-import { darkTheme, lightTheme } from 'naive-ui'
+import { darkTheme, lightTheme, type GlobalThemeOverrides } from 'naive-ui'
 import { useNaiveConfig } from '../../lib/naive-config'
 
-defineProps<{
+const props = defineProps<{
   forceColorMode?: 'light' | 'dark'
+  themeOverrides?: GlobalThemeOverrides
 }>()
 
 const { colorMode } = useNaiveColorMode()
@@ -37,7 +39,7 @@ onMounted(() => {
 })
 
 function getTheme() {
-  const theme = defu(runtimeConfig.themeConfig.shared, deviceTheme)
+  const theme = defu(props.themeOverrides, runtimeConfig.themeConfig.shared, deviceTheme)
   if (runtimeConfig.spaLoadingTemplate) {
     setLoadingTemplateTheme(theme)
   }
@@ -70,8 +72,8 @@ const { locale, dateLocale } = useNaiveConfig()
 
 <template>
   <NConfigProvider
-    :class="forceColorMode === 'dark' || colorMode === 'dark' ? 'dark' : 'light'"
     :key="key"
+    :class="forceColorMode === 'dark' || colorMode === 'dark' ? 'dark' : 'light'"
     :theme="
       forceColorMode === 'light' || (!(forceColorMode === 'dark') && colorMode === 'light') ? lightTheme : darkTheme
     "

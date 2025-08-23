@@ -12,6 +12,7 @@ const props = withDefaults(
     closable?: CardProps['closable']
     beforeClose?: () => boolean
     width?: number | string
+    full?: boolean
   }>(),
   { closable: true, maskClosable: true, escClosable: true }
 )
@@ -39,7 +40,7 @@ function hasSegmented() {
 <template>
   <NModal
     v-model:show="show"
-    class="max-w-[95vw] max-h-[90vh] mx-auto"
+    class=" w-full h-[100dvh] sm:w-auto sm:h-auto sm:max-w-[96vw] sm:max-h-[96dvh] mx-auto rounded-none sm:rounded-sm"
     content-class="flex flex-col h-full shrink-1 overflow-hidden !p-0"
     :style="{ width: width ? (width.toString().match(/[\D]$/) ? width : `${Number(width) / 4}rem`) : 'auto' }"
     preset="card"
@@ -54,6 +55,7 @@ function hasSegmented() {
     @esc="emit('close')"
     @close="onClose"
   >
+    <BackGuard v-model:opened="show" />
     <template #header>
       <slot name="header" />
     </template>

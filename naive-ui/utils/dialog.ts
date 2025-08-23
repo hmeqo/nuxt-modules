@@ -11,6 +11,11 @@ export const naiveDialogOptionPresets = {
     content: '确认删除?',
     type: 'error'
   },
+  warning: <DialogOptions>{
+    title: '警告',
+    content: '确认操作?',
+    type: 'warning'
+  },
   save: <DialogOptions>{
     title: '保存数据',
     content: '确认保存?',

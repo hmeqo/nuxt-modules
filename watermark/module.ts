@@ -17,7 +17,6 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Pass module options to runtimeConfig object
-    // @ts-expect-error unknown type
     nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
       watermark: options
     })
