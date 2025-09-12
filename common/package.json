@@ -2,7 +2,7 @@
   "name": "@workspace-hmeqo/common",
   "version": "0.1.0",
   "dependencies": {
-    "@hmeqo/nuxt-web-kit": "0.1.0-beta.16",
+    "@hmeqo/nuxt-web-kit": "0.1.0-beta.17",
     "@nuxt/eslint": "^1.8.0",
     "@nuxt/eslint-config": "^1.8.0",
     "@nuxt/fonts": "^0.11.4",
