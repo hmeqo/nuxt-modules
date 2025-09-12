@@ -1,7 +1,6 @@
-import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
-import type { ModuleOptions } from './types'
+import { addImports, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
 
-export default defineNuxtModule<ModuleOptions>({
+export default defineNuxtModule({
   meta: {
     name: '@workspace-hmeqo/openapi'
   },
@@ -10,6 +9,11 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
 
     // Add imports
-    addImportsDir(resolver.resolve('./utils'))
+    addImports({
+      from: '@hmeqo/openapi-utils',
+      name: 'schemaToDefaults'
+    })
+
+    addPlugin(resolver.resolve('./plugins/sdk'))
   }
 })

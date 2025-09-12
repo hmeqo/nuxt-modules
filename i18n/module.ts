@@ -18,7 +18,7 @@ export default defineNuxtModule({
       bundle: {
         optimizeTranslationDirective: false
       },
-      lazy: true
+      lazy: false
     })
 
     await installModule('@nuxtjs/i18n')

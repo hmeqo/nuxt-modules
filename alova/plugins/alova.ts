@@ -1,4 +1,4 @@
-import { alovaInst } from '../lib/alova'
+import { alovaInst } from '../lib/core'
 
 export default defineNuxtPlugin(() => {
   if (useRuntimeConfig().public.cors) {

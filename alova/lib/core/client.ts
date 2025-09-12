@@ -1,4 +1,3 @@
-import type { BaseModel } from '@hmeqo/easymodel'
 import { createAlova } from 'alova'
 import fetchAdapter from 'alova/fetch'
 import VueHook from 'alova/vue'
@@ -12,21 +11,15 @@ import {
 } from './event'
 
 export const alovaInst = createAlova({
+  baseURL: '/api',
   statesHook: VueHook,
   requestAdapter: fetchAdapter(),
   beforeRequest(method) {
     method.config.credentials = 'include'
 
-    Object.assign(method.config.headers, {
-      [useCsrf().headerName]: useCookie('csrftoken').value
-      // 'Content-Type': method.config.headers['Content-Type'] ?? (method.meta?.multipart ? 'multipart/form-data' : 'application/json')
-    })
+    method.config.headers[useCsrf().headerName] = useCookie('csrftoken').value
 
-    let data = method.data
-    if ((data as BaseModel)?.toRepresentation) {
-      data = (data as BaseModel).toRepresentation()
-      method.data = data
-    }
+    const data = method.data
     if (method.meta?.multipart || data instanceof FormData) {
       if (!(data instanceof FormData)) {
         const formData = new FormData()
@@ -43,14 +36,10 @@ export const alovaInst = createAlova({
   responded: {
     async onSuccess(response, method) {
       if (response.headers.get('Content-Type')?.includes('application/json')) {
-        let data = await response.json()
+        const data = await response.json()
         if (response.status >= 400) {
           new RequestErrorEvent(response, method, data).emit()
           throw response
-        }
-        if (method.meta?.model) {
-          data = method.meta.model.init(data)
-          if (method.meta.instance) Object.assign(method.meta.instance, data)
         }
         new RequestSuccessEvent(response, method, data).emit()
         return data
