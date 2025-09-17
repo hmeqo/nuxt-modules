@@ -13,7 +13,8 @@ export default defineNuxtModule({
     nuxt.options.i18n = defu(nuxt.options.i18n, <ModuleOptions>{
       strategy: 'no_prefix',
       detectBrowserLanguage: {
-        useCookie: false
+        useCookie: true,
+        cookieKey: 'language'
       },
       bundle: {
         optimizeTranslationDirective: false
@@ -30,8 +31,5 @@ export default defineNuxtModule({
 
     // Add composables
     addImportsDir(resolver.resolve('./composables'))
-
-    // Add composables
-    addImportsDir(resolver.resolve('./utils'))
   }
 })

@@ -54,7 +54,7 @@ export function naiveCreateDialog(options: DialogOptions) {
     ...options,
     onNegativeClick: (e) => {
       options?.onNegativeClick?.(e)
-      // message.info($t(i18nKeys.canceled))
+      // message.info(T.canceled)
     },
     onPositiveClick: (e) => {
       if (!options.onPositiveClick) return
@@ -64,15 +64,15 @@ export function naiveCreateDialog(options: DialogOptions) {
     },
     onEsc: () => {
       options?.onClose?.()
-      // message.info($t(i18nKeys.canceled))
+      // message.info(T.canceled)
     },
     onClose: () => {
       options?.onClose?.()
-      // message.info($t(i18nKeys.canceled))
+      // message.info(T.canceled)
     },
     onMaskClick: (e) => {
       options?.onClose?.()
-      // message.info($t(i18nKeys.canceled))
+      // message.info(T.canceled)
     }
   })
   return result

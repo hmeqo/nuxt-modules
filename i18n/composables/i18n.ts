@@ -10,7 +10,7 @@ export const useCachedI18n = () => {
 
   if (langCookie.value) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (availableLocales.includes(langCookie.value as any)) setLocale(langCookie.value) as any
+    if (availableLocales.includes(langCookie.value as any)) setLocale((locale.value = langCookie.value)) as any
     else langCookie.value = locale.value
   }
   return cachedI18n
