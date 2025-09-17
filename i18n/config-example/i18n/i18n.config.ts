@@ -3,7 +3,7 @@ import zhHans from './locales/zh-hans'
 
 export default defineI18nConfig(() => ({
   messages: {
-    'zh-Hans': zhHans,
+    zh_Hans: zhHans,
     en: en
   }
 }))
