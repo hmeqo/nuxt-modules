@@ -3,8 +3,8 @@ export default defineNuxtConfig({
   i18n: {
     locales: [
       {
-        code: 'zh_Hans',
-        language: 'zh_Hans'
+        code: 'zh-hans',
+        language: 'zh-hans'
       },
       {
         code: 'en',

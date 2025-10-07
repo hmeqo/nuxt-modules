@@ -1,13 +1,13 @@
-import { presetWind4 } from '@unocss/preset-wind4'
+import { presetWind3 } from '@unocss/preset-wind3'
 import type { UserConfig } from 'unocss'
 import presetAnimations from 'unocss-preset-animations'
-import { presetShadcn } from 'unocss-preset-shadcn'
+import { presetShadcnV3 } from 'unocss-preset-shadcn/v3'
 
 const config: UserConfig = {
   presets: [
-    presetWind4(),
+    presetWind3(),
     presetAnimations(),
-    presetShadcn(
+    presetShadcnV3(
       {
         color: 'zinc',
         // With default setting for SolidUI, you need to set the darkSelector option.
@@ -28,7 +28,7 @@ const config: UserConfig = {
         // the default
         /\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/,
         // include js/ts files
-        '(components|app)/**/*.{js,ts}'
+        '(components/ui|app/components/ui)/**/*.{js,ts}'
       ]
     }
   }

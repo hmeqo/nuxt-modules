@@ -1,28 +1,29 @@
-import { addComponentsDir, addImportsDir, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
-import type { ModuleOptions } from '@nuxtjs/i18n'
-import { defu } from 'defu'
+import { addComponentsDir, addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
+import type { ModuleOptions as I18nOptions } from '@nuxtjs/i18n'
 
 export default defineNuxtModule({
   meta: {
     name: '@workspace-hmeqo/i18n'
   },
 
+  moduleDependencies: {
+    '@nuxtjs/i18n': {
+      defaults: <Partial<I18nOptions>>{
+        strategy: 'no_prefix',
+        detectBrowserLanguage: {
+          useCookie: true,
+          cookieKey: 'language',
+          redirectOn: 'no prefix'
+        },
+        bundle: {
+          optimizeTranslationDirective: false
+        }
+      }
+    }
+  },
+
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    nuxt.options.i18n = defu(nuxt.options.i18n, <ModuleOptions>{
-      strategy: 'no_prefix',
-      detectBrowserLanguage: {
-        useCookie: true,
-        cookieKey: 'language'
-      },
-      bundle: {
-        optimizeTranslationDirective: false
-      },
-      lazy: false
-    })
-
-    await installModule('@nuxtjs/i18n')
 
     // Add components
     addComponentsDir({

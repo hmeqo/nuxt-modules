@@ -1,5 +1,5 @@
 export default {
-  zh_Hans: '中文 (简体)',
+  'zh-hans': '中文 (简体)',
   en: 'English',
 
   english: '英语',

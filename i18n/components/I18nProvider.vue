@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Do not remove this
-useLocale()
+useCachedI18n()
+useCachedLocalePath()
 </script>
 
 <template>

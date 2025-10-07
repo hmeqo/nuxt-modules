@@ -1,6 +1,5 @@
-import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { ModuleOptions as ColorModeModuleOptions } from '@nuxtjs/color-mode'
-import { defu } from 'defu'
 
 export default defineNuxtModule({
   meta: {
@@ -15,31 +14,28 @@ export default defineNuxtModule({
     }
   },
 
+  moduleDependencies: {
+    '@nuxt/fonts': {},
+    '@nuxt/eslint': {},
+    '@nuxt/image': {},
+    '@nuxt/icon': {},
+    '@nuxt/test-utils': {},
+    '@nuxtjs/seo': {},
+    '@vueuse/nuxt': {},
+    '@pinia/nuxt': {},
+    'pinia-plugin-persistedstate/nuxt': {},
+    '@hmeqo/nuxt-web-kit': {},
+    '@nuxtjs/color-mode': {
+      defaults: <Partial<ColorModeModuleOptions>>{
+        classSuffix: '',
+        storage: 'cookie',
+        storageKey: 'color-mode'
+      }
+    }
+  },
+
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    const modules = [
-      '@nuxt/fonts',
-      '@nuxt/eslint',
-      '@nuxt/image',
-      '@nuxt/icon',
-      '@nuxt/test-utils',
-      '@nuxtjs/seo',
-      '@vueuse/nuxt',
-      '@pinia/nuxt',
-      'pinia-plugin-persistedstate/nuxt',
-      '@hmeqo/nuxt-web-kit',
-      '@nuxtjs/color-mode'
-    ]
-
-    // @ts-expect-error unknown type
-    nuxt.options.colorMode = defu(nuxt.options.colorMode, <ColorModeModuleOptions>{
-      classSuffix: '',
-      storage: 'cookie',
-      storageKey: 'color-mode'
-    })
-
-    for (const module of modules) await installModule(module)
 
     // Add components
     addComponentsDir({

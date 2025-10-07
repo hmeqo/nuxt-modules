@@ -1,62 +1,86 @@
+import type { CookieRef } from '#app'
+
 type ColorMode = 'dark' | 'light'
 
 type ColorModePreference = ColorMode | 'system'
 
-const colorModes = ['dark', 'light']
+const defaultColorMode: ColorMode = 'light'
+const colorModes: ColorMode[] = ['dark', 'light']
+const colorModePreferences: ColorModePreference[] = [...colorModes, 'system']
 
-let cached: {
-  colorMode: WritableComputedRef<ColorMode>
-  darkMode: WritableComputedRef<boolean>
-  colorModePreference: WritableComputedRef<ColorModePreference>
+const cache: {
+  colorModePreference?: CookieRef<ColorModePreference>
+  nuxtColorMode?: ReturnType<typeof useColorMode>
+  colorModeApi?: {
+    colorModePreference: WritableComputedRef<ColorModePreference>
+    colorMode: WritableComputedRef<ColorMode>
+    darkMode: WritableComputedRef<boolean>
+  }
+} = {}
+
+const useColorModeCookie = () => {
+  if (cache.colorModePreference) return cache.colorModePreference
+
+  const colorModePreference = useCookie<ColorModePreference>('color-mode', {
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 3650
+  })
+  const nuxtColorMode = useNuxtColorMode()
+
+  // Initialize
+  if (!colorModePreferences.includes(colorModePreference.value)) colorModePreference.value = detectPreferredColorMode()
+  nuxtColorMode.preference = colorModePreference.value
+  nuxtColorMode.value = preferenceToColorMode(colorModePreference.value)
+
+  return colorModePreference
+}
+
+const useNuxtColorMode = () => (cache.nuxtColorMode ??= useColorMode())
+
+const preferenceToColorMode = (preference: ColorModePreference) =>
+  preference === 'system' ? detectPreferredColorMode() : preference
+
+const detectPreferredColorMode = () => {
+  if (import.meta.server) {
+    const headers = useRequestHeaders()
+    const raw = headers['sec-ch-prefers-color-scheme'] || headers['x-color-scheme-preference']
+    const value = (Array.isArray(raw) ? raw[0] : raw)?.toString().trim().toLowerCase()
+    const mode: ColorMode | undefined = value === 'dark' ? 'dark' : value === 'light' ? 'light' : undefined
+
+    return mode ?? defaultColorMode
+  } else {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
 }
 
 export const useColorModeApi = () => {
-  if (cached) return cached
+  if (cache.colorModeApi) return cache.colorModeApi
 
-  const nuxtColorMode = useColorMode()
-
-  if (!colorModes.includes(nuxtColorMode.preference))
-    nuxtColorMode.preference = nuxtColorMode.value = detectPreferredColorMode()
+  const colorModePreference = computed({
+    get: () => useColorModeCookie().value,
+    set: (v) => {
+      const colorModeCookie = useColorModeCookie()
+      const nuxtColorMode = useNuxtColorMode()
+      colorModeCookie.value = nuxtColorMode.preference = v
+      nuxtColorMode.value = preferenceToColorMode(v)
+    }
+  })
 
   const colorMode = computed({
-    get: () => {
-      if (import.meta.server) {
-        const colorMode = useCookie<ColorMode>('color-mode', { sameSite: 'lax', maxAge: 60 * 60 * 24 * 3650 }).value
-        if (colorModes.includes(colorMode)) return colorMode
-      }
-      return nuxtColorMode.preference as ColorMode
-    },
-    set: (value) => {
-      nuxtColorMode.preference = nuxtColorMode.value = value
+    get: () => preferenceToColorMode(colorModePreference.value),
+    set: (v) => {
+      colorModePreference.value = v
     }
   })
 
   const darkMode = computed({
     get: () => colorMode.value === 'dark',
-    set: (value) => {
-      colorMode.value = value ? 'dark' : 'light'
-    }
+    set: (v) => (colorMode.value = v ? 'dark' : 'light')
   })
 
-  const colorModePreference = computed({
-    get: () => nuxtColorMode.preference as ColorModePreference,
-    set: (value) => {
-      nuxtColorMode.preference = nuxtColorMode.value = value
-    }
-  })
-
-  return (cached ??= {
+  return (cache.colorModeApi = {
+    colorModePreference,
     colorMode,
-    darkMode,
-    colorModePreference
+    darkMode
   })
-}
-
-function detectPreferredColorMode() {
-  if (import.meta.server) {
-    const headers = useRequestHeaders()
-    return headers['sec-ch-prefers-color-scheme'] === 'dark' ? 'dark' : 'light'
-  } else {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
 }

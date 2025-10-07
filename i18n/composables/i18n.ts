@@ -16,10 +16,12 @@ export const useCachedI18n = () => {
   return cachedI18n
 }
 
+export const $t = (key: string | number) => cachedI18n.t(key)
+
 export const useLocale = () => {
   return useCachedI18n().locale
 }
 
 export const useLangCookie = <T = string>(opts?: { default?: () => T }) => {
-  return useCookie<T>('language', { sameSite: 'lax', maxAge: 60 * 60 * 24 * 3650, default: opts?.default })
+  return useCookie<T>('language', { maxAge: 60 * 60 * 24 * 3650, default: opts?.default })
 }

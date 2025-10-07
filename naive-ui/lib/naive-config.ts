@@ -9,7 +9,7 @@ export const useNaiveConfig = () => {
     switch (locale.value) {
       case 'en':
         return dateEnUS
-      case 'zh_Hans':
+      case 'zh-hans':
         return dateZhCN
     }
   })
@@ -17,7 +17,7 @@ export const useNaiveConfig = () => {
     switch (locale.value) {
       case 'en':
         return enUS
-      case 'zh_Hans':
+      case 'zh-hans':
         return zhCN
     }
   })
