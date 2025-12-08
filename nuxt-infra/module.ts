@@ -1,9 +1,12 @@
 import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
-import type { ModuleOptions as ColorModeModuleOptions } from '@nuxtjs/color-mode'
+import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
+import defu from 'defu'
+import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
+import { VineVitePlugin } from 'vue-vine/vite'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/common'
+    name: '@workspace-hmeqo/nuxt-infra'
   },
 
   hooks: {
@@ -17,21 +20,27 @@ export default defineNuxtModule({
   moduleDependencies: {
     '@nuxt/fonts': {},
     '@nuxt/eslint': {},
-    '@nuxt/image': {},
-    '@nuxt/icon': {},
     '@nuxt/test-utils': {},
     '@nuxtjs/seo': {},
+    '@nuxtjs/device': {},
+    'dayjs-nuxt': {
+      defaults: <Partial<DayjsOptions>>{
+        locales: ['en', 'zh-cn'],
+        plugins: ['relativeTime', 'utc', 'timezone', 'quarterOfYear'],
+        defaultLocale: 'zh-cn',
+        defaultTimezone: 'Asia/Shanghai'
+      }
+    },
+    'nuxt-og-image': {
+      defaults: <Partial<NuxtOgImageOptions>>{
+        enabled: false
+      }
+    },
     '@vueuse/nuxt': {},
     '@pinia/nuxt': {},
     'pinia-plugin-persistedstate/nuxt': {},
-    '@hmeqo/nuxt-web-kit': {},
-    '@nuxtjs/color-mode': {
-      defaults: <Partial<ColorModeModuleOptions>>{
-        classSuffix: '',
-        storage: 'cookie',
-        storageKey: 'color-mode'
-      }
-    }
+    '@workspace-hmeqo/nuxt-color-mode': {},
+    '@workspace-hmeqo/nuxt-web-kit': {}
   },
 
   async setup(options, nuxt) {
@@ -43,7 +52,6 @@ export default defineNuxtModule({
     })
 
     addPlugin(resolver.resolve('./plugins/error.ts'))
-    addPlugin(resolver.resolve('./plugins/dayjs.ts'))
 
     // Add composables
     addImportsDir(resolver.resolve('./composables'))

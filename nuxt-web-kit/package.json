@@ -1,0 +1,11 @@
+{
+  "name": "@workspace-hmeqo/nuxt-web-kit",
+  "version": "0.1.0",
+  "dependencies": {
+    "@hmeqo/paths": "^0.1.1",
+    "@nuxt/kit": "^4.2.1",
+    "defu": "^6.1.4",
+    "lodash": "^4.17.21",
+    "vue-router": "^4.6.3"
+  }
+}

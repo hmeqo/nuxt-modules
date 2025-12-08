@@ -2,6 +2,6 @@
   "name": "@workspace-hmeqo/pwa",
   "version": "0.1.0",
   "dependencies": {
-    "@vite-pwa/nuxt": "^1.0.4"
+    "@vite-pwa/nuxt": "^1.1.0"
   }
 }

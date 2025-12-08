@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "@varlet/nuxt": "^0.1.5",
-    "@varlet/ui": "^3.11.4",
-    "zod": "^4.1.11"
+    "@varlet/ui": "^3.12.3",
+    "zod": "^4.1.13"
   }
 }

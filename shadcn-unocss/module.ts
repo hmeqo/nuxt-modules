@@ -5,6 +5,10 @@ export default defineNuxtModule({
     name: '@workspace-hmeqo/shadcn-unocss'
   },
 
+  moduleDependencies: {
+    'shadcn-nuxt': {}
+  },
+
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
