@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 /**
  * Examples:<br/>
  * useQueryInt('page', { default: () => 1, validate: (v) => v > 0 })<br/>
@@ -121,7 +122,6 @@ function _useQuery<T>(keyOrKeys: string | string[], serializer: Serializer<T>, o
         replace: true,
         force: true
       })
-      console.log({ ...route.query, ...route.meta.__useQuery }, '??????')
     },
     errorMessage: () => `Cannot parse ${keyOrKeys}: ${route.query[key]}`,
     opts

@@ -9,7 +9,7 @@ const config: UserConfig = {
     presetAnimations(),
     presetShadcnV3(
       {
-        color: 'zinc',
+        color: 'neutral',
         // With default setting for SolidUI, you need to set the darkSelector option.
         darkSelector: '[class="dark"]'
       },

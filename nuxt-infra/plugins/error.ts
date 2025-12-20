@@ -1,15 +1,15 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.config.errorHandler = (error: unknown) => {}
+  nuxtApp.vueApp.config.errorHandler = (_err: unknown) => {}
 
-  nuxtApp.hook('vue:error', (error) => {
-    if (error instanceof AbortError) {
-      if (error.message) console.log(error.message)
+  nuxtApp.hook('vue:error', (err) => {
+    if (err instanceof AbortError) {
+      if (err.message) console.log(err.message)
       return
     }
-    console.error('vue:error', error)
+    console.error('vue:error', err)
   })
 
-  nuxtApp.hook('app:error', (error) => {
-    console.error('app:error', error)
+  nuxtApp.hook('app:error', (err) => {
+    console.error('app:error', err)
   })
 })

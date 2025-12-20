@@ -2,6 +2,7 @@
   "name": "@workspace-hmeqo/nuxt-infra",
   "version": "0.1.0",
   "dependencies": {
+    "@hmeqo/paths": "^0.1.1",
     "@nuxt/eslint": "^1.11.0",
     "@nuxt/eslint-config": "^1.11.0",
     "@nuxt/fonts": "^0.12.1",
