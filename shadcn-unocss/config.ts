@@ -1,11 +1,11 @@
-import { presetWind3 } from '@unocss/preset-wind3'
+import { presetWind4 } from '@unocss/preset-wind4'
 import type { UserConfig } from 'unocss'
 import presetAnimations from 'unocss-preset-animations'
 import { presetShadcnV3 } from 'unocss-preset-shadcn/v3'
 
-const config: UserConfig = {
+const config = (): UserConfig => ({
   presets: [
-    presetWind3(),
+    presetWind4(),
     presetAnimations(),
     presetShadcnV3(
       {
@@ -31,7 +31,12 @@ const config: UserConfig = {
         '(components/ui|app/components/ui)/**/*.{js,ts}'
       ]
     }
+  },
+  theme: {
+    spacing: {
+      4: '1rem'
+    }
   }
-}
+})
 
 export default config

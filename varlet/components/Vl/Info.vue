@@ -1,7 +1,7 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    contentClass?: ClassProp
+    contentClass?: HTMLAttrClass
     showIcon?: boolean
     iconName?: string
     iconSize?: number

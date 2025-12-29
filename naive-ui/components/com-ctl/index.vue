@@ -4,9 +4,9 @@ const props = withDefaults(
     scrollable?: boolean
     loading?: boolean
     error?: Error
-    contentClass?: ClassProp
-    loadingClass?: ClassProp
-    errorClass?: ClassProp
+    contentClass?: HTMLAttrClass
+    loadingClass?: HTMLAttrClass
+    errorClass?: HTMLAttrClass
     padding?: string
   }>(),
   {

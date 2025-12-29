@@ -2,7 +2,7 @@
 defineProps<{
   scrollable?: boolean
   padding?: string
-  contentClass?: ClassProp
+  contentClass?: HTMLAttrClass
 }>()
 </script>
 

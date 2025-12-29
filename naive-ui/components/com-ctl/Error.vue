@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   error?: Error
-  errorClass?: ClassProp
+  errorClass?: HTMLAttrClass
 }>()
 </script>
 

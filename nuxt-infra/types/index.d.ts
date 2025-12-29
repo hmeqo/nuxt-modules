@@ -5,7 +5,7 @@ export {}
 declare global {
   type StrBoolean = 'true' | 'false'
 
-  type ClassProp = HTMLAttributes['class']
+  type HTMLAttrClass = HTMLAttributes['class']
 }
 
 declare module 'nuxt/app' {

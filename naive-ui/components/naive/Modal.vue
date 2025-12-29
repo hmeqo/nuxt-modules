@@ -3,7 +3,7 @@ import type { CardProps, ModalProps } from 'naive-ui'
 
 const props = withDefaults(
   defineProps<{
-    containerClass?: ClassProp
+    containerClass?: HTMLAttrClass
     title?: CardProps['title']
     segmented?: ModalProps['segmented']
     maskClosable?: ModalProps['maskClosable']

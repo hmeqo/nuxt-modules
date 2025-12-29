@@ -1,8 +1,6 @@
 import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
-import defu from 'defu'
 import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
-import { VineVitePlugin } from 'vue-vine/vite'
 
 export default defineNuxtModule({
   meta: {
@@ -12,7 +10,7 @@ export default defineNuxtModule({
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@workspace-hmeqo/common/types'
+        types: '@workspace-hmeqo/nuxt-infra/types'
       })
     }
   },
@@ -37,8 +35,6 @@ export default defineNuxtModule({
       }
     },
     '@vueuse/nuxt': {},
-    '@pinia/nuxt': {},
-    'pinia-plugin-persistedstate/nuxt': {},
     '@workspace-hmeqo/nuxt-color-mode': {},
     '@workspace-hmeqo/nuxt-web-kit': {}
   },
@@ -55,9 +51,6 @@ export default defineNuxtModule({
 
     // Add composables
     addImportsDir(resolver.resolve('./composables'))
-
-    // Add stores
-    addImportsDir(resolver.resolve('./stores'))
 
     // Add utils
     addImportsDir(resolver.resolve('./utils'))
