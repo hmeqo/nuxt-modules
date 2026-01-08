@@ -42,6 +42,8 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
+    nuxt.options.experimental.typedPages = true
+
     // Add components
     addComponentsDir({
       path: resolver.resolve('./components')

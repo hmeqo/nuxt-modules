@@ -11,7 +11,7 @@ const config = (): UserConfig => ({
       {
         color: 'neutral',
         // With default setting for SolidUI, you need to set the darkSelector option.
-        darkSelector: '[class="dark"]'
+        darkSelector: '[class*="dark"]'
       },
       {
         // If you are using reka ui.

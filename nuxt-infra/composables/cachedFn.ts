@@ -1,14 +1,10 @@
-let fId = 0
-const cachedFnResultMap: Record<number, unknown> = {}
-
-export const defineCachedFn = <A extends unknown[], R>(
-  fn: (...args: A) => R
-): ((...args: A) => R) => {
-  const id = ++fId
+export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => R): ((...args: A) => R) => {
+  let hasResult = false
+  let cachedResult: R
   return (...args: A) => {
-    if (id in cachedFnResultMap) return cachedFnResultMap[id] as R
+    if (hasResult) return cachedResult
     const result = fn(...args)
-    cachedFnResultMap[id] = result
-    return result
+    hasResult = true
+    return (cachedResult = result)
   }
 }
