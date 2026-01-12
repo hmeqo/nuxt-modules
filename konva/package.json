@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "dependencies": {
     "konva": "^10.0.12",
-    "vue-konva": "^3.2.6"
+    "vue-konva": "^3.3.0"
   }
 }

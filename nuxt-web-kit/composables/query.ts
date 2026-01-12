@@ -133,7 +133,7 @@ function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<
     meta: { __usePathParam: { endpoint: string; key: string; oldValue: unknown; newValue: unknown }[] }
   }
 
-  const data = ref<T | undefined>(serializer.in(route.params[key]))
+  const data = ref<T | undefined>(serializer.in(route.params[key as keyof typeof route.params]))
   if (data.value !== undefined && opts?.validate?.(data.value) === false) data.value = undefined
   data.value = data.value ?? opts?.default?.()
 
@@ -145,7 +145,7 @@ function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<
         ...route.meta.__usePathParam,
         [key]: {
           endpoint: ensureStartSlash(ensureEndSlash(endpoint)),
-          oldValue: route.params[key]?.[0],
+          oldValue: route.params[key as keyof typeof route.params]?.[0],
           newValue: value
         }
       }
@@ -158,7 +158,8 @@ function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<
         replace: true
       })
     },
-    errorMessage: () => `Cannot parse path param ${key} of endpoint ${endpoint}: ${route.params[key]}`,
+    errorMessage: () =>
+      `Cannot parse path param ${key} of endpoint ${endpoint}: ${route.params[key as keyof typeof route.params]}`,
     opts
   })
 }

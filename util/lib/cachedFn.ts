@@ -1,4 +1,6 @@
-export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => R): ((...args: A) => R) => {
+type NoPromise<T> = T extends Promise<any> ? never : T
+
+export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => NoPromise<R>): ((...args: A) => R) => {
   let hasResult = false
   let cachedResult: R
   return (...args: A) => {
