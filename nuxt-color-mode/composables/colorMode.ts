@@ -21,24 +21,24 @@ export const useColorModeApi = () => {
     set: (v) => {
       const nuxtColorMode = useNuxtColorMode()
       nuxtColorMode.preference = v
-    }
+    },
   })
 
   const colorMode = computed({
     get: () => useNuxtColorMode().value as ColorMode,
     set: (v) => {
       colorModePreference.value = v
-    }
+    },
   })
 
   const darkMode = computed({
     get: () => colorMode.value === 'dark',
-    set: (v) => (colorMode.value = v ? 'dark' : 'light')
+    set: (v) => (colorMode.value = v ? 'dark' : 'light'),
   })
 
   return (cache.colorModeApi = {
     colorModePreference,
     colorMode,
-    darkMode
+    darkMode,
   })
 }

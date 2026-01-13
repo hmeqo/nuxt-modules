@@ -15,7 +15,7 @@ const { world, mouse } = useKonvaContext()
 // --- 绘图状态 ---
 const drawState = reactive({
   active: false,
-  start: { x: 0, y: 0 }
+  start: { x: 0, y: 0 },
 })
 
 // 定义策略接口
@@ -36,19 +36,19 @@ const ShapeStrategies: Record<'rect' | 'circle', ShapeStrategy<ShapeData>> = {
         y: h < 0 ? current.y : start.y,
         width: Math.abs(w),
         height: Math.abs(h),
-        rotation: 0
+        rotation: 0,
       }
     },
     normalize(node, base) {
       const rectNode = node as Konva.Rect
       return {
         width: Math.max(5, base.width * rectNode.scaleX()),
-        height: Math.max(5, base.height * rectNode.scaleY())
+        height: Math.max(5, base.height * rectNode.scaleY()),
       }
     },
     isValid(g) {
       return (g.width ?? 0) >= 5 && (g.height ?? 0) >= 5
-    }
+    },
   } as ShapeStrategy<RectShape>,
   circle: {
     getGeometry(start, current) {
@@ -58,19 +58,19 @@ const ShapeStrategies: Record<'rect' | 'circle', ShapeStrategy<ShapeData>> = {
         x: start.x,
         y: start.y,
         radius: Math.sqrt(dx * dx + dy * dy),
-        rotation: 0
+        rotation: 0,
       }
     },
     normalize(node, base) {
       const circleNode = node as Konva.Circle
       return {
-        radius: Math.max(2, base.radius * circleNode.scaleX())
+        radius: Math.max(2, base.radius * circleNode.scaleX()),
       }
     },
     isValid(g) {
       return (g.radius ?? 0) >= 2
-    }
-  } as ShapeStrategy<CircleShape>
+    },
+  } as ShapeStrategy<CircleShape>,
 }
 
 // 计算预览图形 (Ghost)
@@ -89,9 +89,9 @@ const ghostConfig = computed(
       ...geometry,
       stroke: props.drawingColor || 'yellow',
       strokeWidth: 2,
-      listening: false
+      listening: false,
     }
-  }
+  },
 )
 
 // --- 选中状态 ---
@@ -148,7 +148,7 @@ const onBoardMouseUp = () => {
         x: config.x,
         y: config.y,
         rotation: 0,
-        stroke: props.drawingColor
+        stroke: props.drawingColor,
       }
 
       if (currentMode === 'rect') {
@@ -156,13 +156,13 @@ const onBoardMouseUp = () => {
           ...commonProps,
           type: 'rect',
           width: config.width!, // 确信 rect 策略会返回 width
-          height: config.height!
+          height: config.height!,
         }
       } else {
         newShape = {
           ...commonProps,
           type: 'circle',
-          radius: config.radius! // 确信 circle 策略会返回 radius
+          radius: config.radius!, // 确信 circle 策略会返回 radius
         }
       }
 
@@ -191,7 +191,7 @@ const onTransformEnd = (e: Konva.KonvaEventObject<Event>, item: ShapeData) => {
   const baseTransform = {
     x: node.x(),
     y: node.y(),
-    rotation: node.rotation()
+    rotation: node.rotation(),
   }
 
   // 2. 归一化 (TS 知道 item 是 ShapeData，strategy 也是对应的)
@@ -220,7 +220,7 @@ const onTransformEnd = (e: Konva.KonvaEventObject<Event>, item: ShapeData) => {
         width: world.size.value.width,
         height: world.size.value.height,
         fill: 'transparent',
-        listening: true
+        listening: true,
       }"
       @mousedown="onBoardMouseDown"
       @mouseup="onBoardMouseUp"
@@ -236,7 +236,7 @@ const onTransformEnd = (e: Konva.KonvaEventObject<Event>, item: ShapeData) => {
           stroke: item.stroke || drawingColor || 'yellow',
           strokeWidth: 2,
           name: 'vision-shape',
-          listening: mode === 'select'
+          listening: mode === 'select',
         }"
         @mousedown="onShapeDown"
         @transformend="(e: any) => onTransformEnd(e, item)"
@@ -259,7 +259,7 @@ const onTransformEnd = (e: Konva.KonvaEventObject<Event>, item: ShapeData) => {
         anchorSize: 9,
         borderStroke: '#00ff00',
         borderDash: [4, 4],
-        keepRatio: false
+        keepRatio: false,
       }"
     />
   </v-group>

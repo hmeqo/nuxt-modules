@@ -4,43 +4,43 @@ export const naiveDialogOptionPresets = {
   upload: <DialogOptions>{
     title: '上传文件',
     content: '确认上传?',
-    type: 'info'
+    type: 'info',
   },
   delete: <DialogOptions>{
     title: '删除数据',
     content: '确认删除?',
-    type: 'error'
+    type: 'error',
   },
   warning: <DialogOptions>{
     title: '警告',
     content: '确认操作?',
-    type: 'warning'
+    type: 'warning',
   },
   save: <DialogOptions>{
     title: '保存数据',
     content: '确认保存?',
-    type: 'info'
+    type: 'info',
   },
   submit: <DialogOptions>{
     title: '提交数据',
     content: '确认提交?',
-    type: 'info'
+    type: 'info',
   },
   confirm: <DialogOptions>{
     title: '确认操作',
     content: '确认操作?',
-    type: 'info'
+    type: 'info',
   },
   logout: <DialogOptions>{
     title: '退出登录',
     content: '确认退出登录?',
-    type: 'warning'
+    type: 'warning',
   },
   resetPwd: <DialogOptions>{
     title: '重置密码',
     content: '重置后将退出已登录的设备, 确认重置?',
-    type: 'warning'
-  }
+    type: 'warning',
+  },
 }
 
 export function naiveCreateDialog(options: DialogOptions) {
@@ -73,7 +73,7 @@ export function naiveCreateDialog(options: DialogOptions) {
     onMaskClick: (e) => {
       options?.onClose?.()
       // message.info(T.canceled)
-    }
+    },
   })
   return result
 }
@@ -93,7 +93,7 @@ export function naiveShowDialog(options: Omit<DialogOptions, 'onEsc' | 'onMaskCl
       onClose() {
         options?.onClose?.()
         reject(new AbortError())
-      }
-    })
+      },
+    }),
   )
 }

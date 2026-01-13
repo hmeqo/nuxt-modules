@@ -11,13 +11,13 @@ export const usePiniaCacheStore = defineStore('cache', {
         get: () => this.$state[key] ?? opts?.default?.(),
         set: (v) => {
           this.$state[key] = v
-        }
+        },
       })
-    }
+    },
   },
   persist: {
-    storage: piniaPluginPersistedstate.localStorage()
-  }
+    storage: piniaPluginPersistedstate.localStorage(),
+  },
 })
 
 export const usePiniaCookieStore = defineStore('c', {
@@ -28,9 +28,9 @@ export const usePiniaCookieStore = defineStore('c', {
         get: () => this.$state[key] ?? opts?.default?.(),
         set: (v) => {
           this.$state[key] = v
-        }
+        },
       })
-    }
+    },
   },
   persist: {
     storage: <StorageLike>{
@@ -39,9 +39,9 @@ export const usePiniaCookieStore = defineStore('c', {
       },
       setItem(key, value) {
         useCookie(key, { sameSite: 'lax' }).value = value
-      }
-    }
-  }
+      },
+    },
+  },
 })
 
 export const usePiniaStateStore = defineStore('state', {
@@ -53,11 +53,11 @@ export const usePiniaStateStore = defineStore('state', {
         get: () => this.$state[key] ?? (defaultValue = opts?.default?.()),
         set: (v) => {
           this.$state[key] = v
-        }
+        },
       })
-    }
+    },
   },
   persist: {
-    storage: piniaPluginPersistedstate.sessionStorage()
-  }
+    storage: piniaPluginPersistedstate.sessionStorage(),
+  },
 })

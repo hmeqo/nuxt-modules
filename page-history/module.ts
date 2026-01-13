@@ -2,7 +2,7 @@ import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtM
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/page-history'
+    name: '@workspace-hmeqo/page-history',
   },
 
   setup(options, nuxt) {
@@ -10,15 +10,15 @@ export default defineNuxtModule({
 
     // Add plugin
     addPlugin({
-      src: resolver.resolve('./plugins/history.ts')
+      src: resolver.resolve('./plugins/history.ts'),
     })
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
 
     // Add imports
     addImportsDir(resolver.resolve('./composables'))
-  }
+  },
 })

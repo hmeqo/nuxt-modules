@@ -5,7 +5,7 @@ import modern from './themes/modern'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/naive-ui'
+    name: '@workspace-hmeqo/naive-ui',
   },
 
   moduleDependencies: (nuxt) => ({
@@ -15,9 +15,9 @@ export default defineNuxtModule({
         // @ts-expect-error unknown type
         colorModePreference: nuxt.options.naiveui?.colorModePreference || nuxt.options.colorMode.preference,
         // @ts-expect-error unknown type
-        themeConfig: defu(nuxt.options.naiveui?.themeConfig || modern, { shared: { common: { fontFamily: '' } } })
-      }
-    }
+        themeConfig: defu(nuxt.options.naiveui?.themeConfig || modern, { shared: { common: { fontFamily: '' } } }),
+      },
+    },
   }),
 
   async setup(options, nuxt) {
@@ -25,7 +25,7 @@ export default defineNuxtModule({
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
 
     addPlugin(resolver.resolve('./plugins/colorMode.ts'))
@@ -38,5 +38,5 @@ export default defineNuxtModule({
 
     // Add stores
     addImportsDir(resolver.resolve('./stores'))
-  }
+  },
 })

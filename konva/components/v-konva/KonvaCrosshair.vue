@@ -4,12 +4,12 @@ withDefaults(
     color?: string
   }>(),
   {
-    color: '#888'
-  }
+    color: '#888',
+  },
 )
 
 const {
-  screen: { screenSize, center }
+  screen: { screenSize, center },
 } = useKonvaContext()
 </script>
 
@@ -19,7 +19,7 @@ const {
       :config="{
         points: [0, center.y, screenSize.width, center.y],
         stroke: color,
-        dash: [10, 5]
+        dash: [10, 5],
       }"
     />
 
@@ -27,7 +27,7 @@ const {
       :config="{
         points: [center.x, 0, center.x, screenSize.height],
         stroke: color,
-        dash: [10, 5]
+        dash: [10, 5],
       }"
     />
   </v-group>

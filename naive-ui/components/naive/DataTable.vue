@@ -16,8 +16,8 @@ const props = withDefaults(
     throttle?: number
   }>(),
   {
-    throttle: 100
-  }
+    throttle: 100,
+  },
 )
 const selected = defineModel<unknown>('selected')
 const menuVisible = defineModel<boolean>('show-menu', { default: false })
@@ -71,7 +71,7 @@ defineExpose({ select, showDropmenu })
           onContextmenu: (e) => {
             showDropmenu(e, row, index)
           },
-          ...extraRowProps?.(row, index)
+          ...extraRowProps?.(row, index),
         })
       "
       :row-key="(row) => row.id"

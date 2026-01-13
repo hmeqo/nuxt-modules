@@ -2,11 +2,11 @@ import { addComponentsDir, addPlugin, createResolver, defineNuxtModule } from '@
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/varlet'
+    name: '@workspace-hmeqo/varlet',
   },
 
   moduleDependencies: {
-    '@varlet/nuxt': {}
+    '@varlet/nuxt': {},
   },
 
   async setup(options, nuxt) {
@@ -14,12 +14,12 @@ export default defineNuxtModule({
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
 
     addPlugin(resolver.resolve('./plugins/color-mode.ts'))
 
     // Add utils
     // addImportsDir(resolver.resolve('./utils'))
-  }
+  },
 })

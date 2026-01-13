@@ -7,8 +7,8 @@ const props = withDefaults(
     fill?: string
   }>(),
   {
-    worldSize: () => ({ width: 640, height: 480 })
-  }
+    worldSize: () => ({ width: 640, height: 480 }),
+  },
 )
 
 const containerRef = useTemplateRef('containerRef')
@@ -17,7 +17,7 @@ const context = defineKonvaContext(containerRef, props.worldSize)
 const {
   events: { binding },
   screen: { stageConfig },
-  world: { layerConfig }
+  world: { layerConfig },
 } = context
 </script>
 

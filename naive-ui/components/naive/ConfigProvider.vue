@@ -17,7 +17,7 @@ const key = ref(1)
 
 useHead(() => ({
   htmlAttrs: {
-    class: colorMode.value === 'dark' ? 'dark' : ''
+    class: colorMode.value === 'dark' ? 'dark' : '',
   },
   bodyAttrs: {
     style: {
@@ -25,9 +25,9 @@ useHead(() => ({
       color: naiveTheme.value?.common?.textColorBase,
       'font-family': naiveTheme.value?.common?.fontFamily,
       'font-size': naiveTheme.value?.common?.fontSize,
-      'line-height': naiveTheme.value?.common?.lineHeight
-    }
-  }
+      'line-height': naiveTheme.value?.common?.lineHeight,
+    },
+  },
 }))
 
 onMounted(() => {

@@ -54,7 +54,7 @@ watch(
     if (v) open()
     else close()
   },
-  { immediate: true }
+  { immediate: true },
 )
 </script>
 

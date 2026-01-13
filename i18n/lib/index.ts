@@ -5,7 +5,7 @@
  */
 export function fillI18nLocaleRecords(
   current: Record<string, string>,
-  reference?: Record<string, string>
+  reference?: Record<string, string>,
 ): Record<string, string> {
   const result: Record<string, string> = { ...current }
   for (const key in reference || current) {

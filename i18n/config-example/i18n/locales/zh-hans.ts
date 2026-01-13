@@ -5,5 +5,5 @@ export default {
   english: '英语',
   simplified_chinese: '简体中文',
 
-  welcome: '欢迎'
+  welcome: '欢迎',
 }

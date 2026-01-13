@@ -2,11 +2,11 @@ import { defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/shadcn-unocss'
+    name: '@workspace-hmeqo/shadcn-unocss',
   },
 
   moduleDependencies: {
-    'shadcn-nuxt': {}
+    'shadcn-nuxt': {},
   },
 
   setup(options, nuxt) {
@@ -15,5 +15,5 @@ export default defineNuxtModule({
     // addComponentsDir({
     //   path: resolver.resolve('./components')
     // })
-  }
+  },
 })

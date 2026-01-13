@@ -26,7 +26,6 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.23",
-    "rimraf": "^6.1.2"
+    "@types/lodash": "^4.17.23"
   }
 }

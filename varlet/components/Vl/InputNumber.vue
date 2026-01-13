@@ -9,7 +9,7 @@ const props = defineProps<{
 const _model = defineModel<number>('modelValue')
 const model = computed({
   get: () => _model.value?.toString(),
-  set: (v) => (_model.value = Number(v))
+  set: (v) => (_model.value = Number(v)),
 })
 
 const rules = computed(() => {

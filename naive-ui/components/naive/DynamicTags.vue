@@ -10,8 +10,8 @@ withDefaults(
   {
     placeholder: '',
     btnSize: 'small',
-    tagProps: () => ({})
-  }
+    tagProps: () => ({}),
+  },
 )
 
 const tags = defineModel<string[]>('value', { default: [] })

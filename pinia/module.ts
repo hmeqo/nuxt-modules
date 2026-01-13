@@ -2,12 +2,12 @@ import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/pinia'
+    name: '@workspace-hmeqo/pinia',
   },
 
   moduleDependencies: {
     '@pinia/nuxt': {},
-    'pinia-plugin-persistedstate/nuxt': {}
+    'pinia-plugin-persistedstate/nuxt': {},
   },
 
   async setup(options, nuxt) {
@@ -18,5 +18,5 @@ export default defineNuxtModule({
 
     // Add stores
     addImportsDir(resolver.resolve('./stores'))
-  }
+  },
 })

@@ -3,7 +3,7 @@ import type { ModuleOptions as ColorModeModuleOptions } from '@nuxtjs/color-mode
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/nuxt-color-mode'
+    name: '@workspace-hmeqo/nuxt-color-mode',
   },
 
   moduleDependencies: {
@@ -11,9 +11,9 @@ export default defineNuxtModule({
       defaults: <Partial<ColorModeModuleOptions>>{
         classSuffix: '',
         // storage: 'cookie',
-        storageKey: 'color-mode'
-      }
-    }
+        storageKey: 'color-mode',
+      },
+    },
   },
 
   async setup(options, nuxt) {
@@ -21,5 +21,5 @@ export default defineNuxtModule({
 
     // Add composables
     addImportsDir(resolver.resolve('./composables'))
-  }
+  },
 })

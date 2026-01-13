@@ -3,7 +3,7 @@ import type { ModuleOptions as PwaModuleOptions } from '@vite-pwa/nuxt'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/pwa'
+    name: '@workspace-hmeqo/pwa',
   },
 
   moduleDependencies: {
@@ -19,18 +19,18 @@ export default defineNuxtModule({
             {
               src: 'icon.png',
               sizes: '512x512',
-              type: 'image/png'
-            }
+              type: 'image/png',
+            },
           ],
-          display: 'standalone'
+          display: 'standalone',
         },
         registerWebManifestInRouteRules: true,
         devOptions: {
           enabled: false,
-          type: 'module'
-        }
-      }
-    }
+          type: 'module',
+        },
+      },
+    },
   },
 
   async setup(options, nuxt) {
@@ -38,7 +38,7 @@ export default defineNuxtModule({
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
-  }
+  },
 })

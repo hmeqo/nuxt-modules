@@ -24,6 +24,6 @@ export const useNaiveConfig = () => {
 
   return {
     dateLocale: naiveDateLocale,
-    locale: naiveLocale
+    locale: naiveLocale,
   }
 }

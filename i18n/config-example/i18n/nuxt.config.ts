@@ -4,12 +4,12 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'zh-hans',
-        language: 'zh-hans'
+        language: 'zh-hans',
       },
       {
         code: 'en',
-        language: 'en'
-      }
-    ]
-  }
+        language: 'en',
+      },
+    ],
+  },
 })

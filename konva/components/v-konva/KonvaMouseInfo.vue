@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const {
-  mouse: { isInside, screen, world }
+  mouse: { isInside, screen, world },
 } = useKonvaContext()
 </script>
 
@@ -15,7 +15,7 @@ const {
         x: 10,
         y: 10,
         fill: '#aaa',
-        fontSize: 11
+        fontSize: 11,
       }"
     />
 
@@ -26,7 +26,7 @@ const {
         y: 28,
         fill: '#4ade80',
         fontSize: 13,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
       }"
     />
   </v-group>

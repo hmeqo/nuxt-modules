@@ -4,15 +4,15 @@ import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/nuxt-infra'
+    name: '@workspace-hmeqo/nuxt-infra',
   },
 
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@workspace-hmeqo/nuxt-infra/types'
+        types: '@workspace-hmeqo/nuxt-infra/types',
       })
-    }
+    },
   },
 
   moduleDependencies: {
@@ -26,17 +26,18 @@ export default defineNuxtModule({
         locales: ['en', 'zh-cn'],
         plugins: ['relativeTime', 'utc', 'timezone', 'quarterOfYear'],
         defaultLocale: 'zh-cn',
-        defaultTimezone: 'Asia/Shanghai'
-      }
+        defaultTimezone: 'Asia/Shanghai',
+      },
     },
     'nuxt-og-image': {
       defaults: <Partial<NuxtOgImageOptions>>{
-        enabled: false
-      }
+        enabled: false,
+      },
     },
     '@vueuse/nuxt': {},
+    '@workspace-hmeqo/util': {},
+    '@workspace-hmeqo/nuxt-web-kit': {},
     '@workspace-hmeqo/nuxt-color-mode': {},
-    '@workspace-hmeqo/nuxt-web-kit': {}
   },
 
   async setup(options, nuxt) {
@@ -46,7 +47,7 @@ export default defineNuxtModule({
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
 
     addPlugin(resolver.resolve('./plugins/error.ts'))
@@ -56,5 +57,5 @@ export default defineNuxtModule({
 
     // Add utils
     addImportsDir(resolver.resolve('./utils'))
-  }
+  },
 })

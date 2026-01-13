@@ -9,13 +9,13 @@ export default <NaiveUiModuleOptions['themeConfig']>{
       primaryColorSuppl: '#66b1ff',
       borderRadius: '4px',
       fontFamily: '',
-      fontFamilyMono: ''
-    }
+      fontFamilyMono: '',
+    },
   },
   light: {
     Layout: {
-      color: '#f9fafb'
-    }
+      color: '#f9fafb',
+    },
   },
   dark: {
     common: {
@@ -35,13 +35,13 @@ export default <NaiveUiModuleOptions['themeConfig']>{
       color: '#0a0a0a',
       siderColor: '#0a0a0a',
       headerColor: '#0a0a0a',
-      footerColor: '#0a0a0a'
+      footerColor: '#0a0a0a',
     },
     Notification: {
-      color: '#0a0a0a'
+      color: '#0a0a0a',
     },
     Message: {
-      colorSuccess: '#0a0a0a'
+      colorSuccess: '#0a0a0a',
     },
     DataTable: {
       // borderColor: '#262626',
@@ -57,26 +57,26 @@ export default <NaiveUiModuleOptions['themeConfig']>{
       tdColorSortingModal: '#171717',
       thColorHoverModal: '#171717',
       thColorSorting: '#171717',
-      thColorSortingModal: '#171717'
+      thColorSortingModal: '#171717',
     },
     Input: {
       color: '#111111',
       colorFocus: '#111111',
       colorHover: '#111111',
-      iconColor: '#999999'
+      iconColor: '#999999',
     },
     Button: {
       color: '#111111',
-      colorHover: '#111111'
+      colorHover: '#111111',
     },
     InternalSelection: {
-      color: '#111111'
+      color: '#111111',
     },
     Tooltip: {
-      color: '#0a0a0a'
+      color: '#0a0a0a',
     },
     Dropdown: {
-      color: '#0a0a0a'
-    }
-  }
+      color: '#0a0a0a',
+    },
+  },
 }

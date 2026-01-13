@@ -17,8 +17,8 @@ export const useNaiveApi = (opts?: { loadingBarDisabled?: boolean; refresh: bool
       ? {
           start: () => {},
           finish: () => {},
-          error: () => {}
+          error: () => {},
         }
-      : useLoadingBar()
+      : useLoadingBar(),
   })
 }

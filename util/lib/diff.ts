@@ -12,13 +12,13 @@ export function useDiff<T extends { id: unknown }>(_data: T[]) {
     data.value.filter((v) => {
       const od = oldData.value.find((ov) => ov.id === v.id)
       return od && !isEqual(od, v)
-    })
+    }),
   )
   return {
     data,
     oldData,
     added,
     removed,
-    changed
+    changed,
   }
 }

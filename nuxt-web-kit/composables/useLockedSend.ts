@@ -14,7 +14,7 @@ export const useLockedSend = <T>(
      */
     once?: boolean
     status?: Ref<AsyncDataRequestStatus>
-  }
+  },
 ) => {
   const maxConcurrency = opts?.concurrency ?? 1
   let pendingCount = 0
@@ -36,6 +36,6 @@ export const useLockedSend = <T>(
       } finally {
         pendingCount--
       }
-    }
+    },
   }
 }

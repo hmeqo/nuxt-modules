@@ -12,6 +12,6 @@ export function computeContain(container: Size, inner: Size) {
     height,
     x,
     y,
-    scale
+    scale,
   }
 }

@@ -4,7 +4,7 @@ export function withOriginUrl(url: string) {
 
 export function toThumbnailUrl(url: string, opts?: { size?: number }) {
   const params = new URLSearchParams({
-    size: `${opts?.size || 256}`
+    size: `${opts?.size || 256}`,
   })
   return `${url}?${params}`
 }

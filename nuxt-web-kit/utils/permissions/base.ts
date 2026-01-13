@@ -12,10 +12,10 @@ export type Permission = {
   verify(): boolean
 }
 
-export function createPermission(verify: Permission["verify"]): Permission {
+export function createPermission(verify: Permission['verify']): Permission {
   return {
     verify() {
       return verify()
-    }
+    },
   }
 }

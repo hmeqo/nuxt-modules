@@ -3,7 +3,7 @@ import type { ModuleOptions as I18nOptions } from '@nuxtjs/i18n'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/i18n'
+    name: '@workspace-hmeqo/i18n',
   },
 
   moduleDependencies: {
@@ -13,13 +13,13 @@ export default defineNuxtModule({
         detectBrowserLanguage: {
           useCookie: true,
           cookieKey: 'language',
-          redirectOn: 'no prefix'
+          redirectOn: 'no prefix',
         },
         bundle: {
-          optimizeTranslationDirective: false
-        }
-      }
-    }
+          optimizeTranslationDirective: false,
+        },
+      },
+    },
   },
 
   async setup(options, nuxt) {
@@ -27,10 +27,10 @@ export default defineNuxtModule({
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
 
     // Add composables
     addImportsDir(resolver.resolve('./composables'))
-  }
+  },
 })

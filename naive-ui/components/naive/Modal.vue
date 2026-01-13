@@ -14,7 +14,7 @@ const props = withDefaults(
     width?: number | string
     full?: boolean
   }>(),
-  { closable: true, maskClosable: true, escClosable: true }
+  { closable: true, maskClosable: true, escClosable: true },
 )
 const emit = defineEmits<{
   (e: 'close'): void
@@ -40,7 +40,7 @@ function hasSegmented() {
 <template>
   <NModal
     v-model:show="show"
-    class=" w-full h-[100dvh] sm:w-auto sm:h-auto sm:max-w-[96vw] sm:max-h-[96dvh] mx-auto rounded-none sm:rounded-sm"
+    class="w-full h-[100dvh] sm:w-auto sm:h-auto sm:max-w-[96vw] sm:max-h-[96dvh] mx-auto rounded-none sm:rounded-sm"
     content-class="flex flex-col h-full shrink-1 overflow-hidden !p-0"
     :style="{ width: width ? (width.toString().match(/[\D]$/) ? width : `${Number(width) / 4}rem`) : 'auto' }"
     preset="card"
@@ -63,7 +63,7 @@ function hasSegmented() {
       class="flex flex-col w-full h-full overflow-hidden"
       :content-style="{
         padding: '0 var(--n-padding-left) var(--n-padding-bottom) var(--n-padding-left)',
-        paddingTop: hasSegmented() ? 'var(--n-padding-top)' : '0'
+        paddingTop: hasSegmented() ? 'var(--n-padding-top)' : '0',
       }"
     >
       <slot />

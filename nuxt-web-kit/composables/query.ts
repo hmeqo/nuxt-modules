@@ -47,7 +47,7 @@ type Serializer<T> = { in: (v: unknown) => T | undefined; out: (v: unknown) => s
 
 const StringSerializer: Serializer<string> = {
   in: (v) => `${v}`,
-  out: (v) => `${v}`
+  out: (v) => `${v}`,
 }
 
 const NumberSerializer: Serializer<number> = {
@@ -56,14 +56,14 @@ const NumberSerializer: Serializer<number> = {
     if (Number.isNaN(value)) return
     return value
   },
-  out: (v) => `${v}`
+  out: (v) => `${v}`,
 }
 
 export function toAutoController<T>({
   data,
   update,
   errorMessage,
-  opts
+  opts,
 }: {
   data: Ref<T | undefined>
   update: () => void
@@ -88,7 +88,7 @@ export function toAutoController<T>({
       const updated = v !== data.value
       data.value = v
       if (updated) update()
-    }
+    },
   })
 }
 
@@ -120,11 +120,11 @@ function _useQuery<T>(keyOrKeys: string | string[], serializer: Serializer<T>, o
         path: route.path,
         query: { ...route.query, ...route.meta.__useQuery },
         replace: true,
-        force: true
+        force: true,
       })
     },
     errorMessage: () => `Cannot parse ${keyOrKeys}: ${route.query[key]}`,
-    opts
+    opts,
   })
 }
 
@@ -146,28 +146,28 @@ function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<
         [key]: {
           endpoint: ensureStartSlash(ensureEndSlash(endpoint)),
           oldValue: route.params[key as keyof typeof route.params]?.[0],
-          newValue: value
-        }
+          newValue: value,
+        },
       }
       navigateTo({
         path: Object.values(route.meta.__usePathParam).reduce(
           (path, { endpoint, oldValue, newValue }) => path.replace(`${endpoint}${oldValue}`, `${endpoint}${newValue}`),
-          route.path
+          route.path,
         ),
         query: route.query,
-        replace: true
+        replace: true,
       })
     },
     errorMessage: () =>
       `Cannot parse path param ${key} of endpoint ${endpoint}: ${route.params[key as keyof typeof route.params]}`,
-    opts
+    opts,
   })
 }
 
 export function toUseQuery<A>(serializer: Serializer<A>) {
   function useQuery<T = A>(
     key: string | string[],
-    opts: Opts<T> & ({ default: () => T } | { showError: true } | { fallback: string })
+    opts: Opts<T> & ({ default: () => T } | { showError: true } | { fallback: string }),
   ): Ref<T>
   function useQuery<T = A>(key: string | string[], opts?: Opts<T>): Ref<T | undefined>
   function useQuery(key: string | string[], opts?: Opts<A>) {
@@ -180,7 +180,7 @@ export function toUsePathParam<A>(serializer: Serializer<A>) {
   function usePathParam<T = A>(
     key: string,
     endpoint: string,
-    opts: Opts<T> & ({ default: () => T } | { showError: true } | { fallback: string })
+    opts: Opts<T> & ({ default: () => T } | { showError: true } | { fallback: string }),
   ): Ref<T>
   function usePathParam<T = A>(key: string, endpoint: string, opts?: Opts<T>): Ref<T | undefined>
   function usePathParam(key: string, endpoint: string, opts?: Opts<A>) {

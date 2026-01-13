@@ -5,7 +5,7 @@ const props = defineProps<{
 }>()
 
 const {
-  world: { size: worldSize }
+  world: { size: worldSize },
 } = useKonvaContext()
 
 const imageObj = ref<HTMLImageElement | null>(null)
@@ -32,7 +32,7 @@ const imageConfig = computed(() => {
     height,
     x,
     y,
-    ...props.config
+    ...props.config,
   }
 })
 
@@ -41,7 +41,7 @@ watch(
   (newVal) => {
     if (newVal) loadImage(newVal)
   },
-  { immediate: true }
+  { immediate: true },
 )
 </script>
 

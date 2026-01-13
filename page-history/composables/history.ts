@@ -29,7 +29,7 @@ export const usePageHistory = () => {
         name: path.name as string,
         path: path.fullPath,
         title: path.meta.title,
-        icon: path.meta.icon
+        icon: path.meta.icon,
       })
     } else if ('tags' in path && 'title' in path) {
       if (paths.value.some((x) => x.name === path.name)) return
@@ -53,6 +53,6 @@ export const usePageHistory = () => {
     paths,
     addPath,
     removePath,
-    clearPaths
+    clearPaths,
   }
 }

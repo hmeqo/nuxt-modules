@@ -11,8 +11,8 @@ withDefaults(
     showIcon: false,
     iconName: 'information-outline',
     iconSize: 16,
-    truncate: true
-  }
+    truncate: true,
+  },
 )
 
 const show = ref(false)

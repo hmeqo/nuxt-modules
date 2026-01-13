@@ -6,14 +6,14 @@ const props = withDefaults(
     initialY?: number
   }>(),
   {
-    title: 'Tools'
-  }
+    title: 'Tools',
+  },
 )
 
 const {
   containerRef,
   events,
-  screen: { screenSize }
+  screen: { screenSize },
 } = useKonvaContext()
 
 const panelRef = ref<HTMLElement | null>(null)
@@ -77,7 +77,7 @@ const { startDrag } = (() => {
   onUnmounted(onResize)
 
   return {
-    startDrag
+    startDrag,
   }
 })()
 </script>
@@ -91,7 +91,7 @@ const { startDrag } = (() => {
       top: `${y}px`,
       cursor: isDragging ? 'grabbing' : 'default',
       transform: isDragging ? 'scale(1.01)' : 'scale(1)',
-      transition: isDragging ? 'none' : 'transform 0.1s, box-shadow 0.2s'
+      transition: isDragging ? 'none' : 'transform 0.1s, box-shadow 0.2s',
     }"
   >
     <slot name="custom" :start-drag="startDrag" :title="title">

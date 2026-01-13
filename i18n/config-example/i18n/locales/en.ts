@@ -7,5 +7,5 @@ export default <I18nLocale>{
   english: 'English',
   simplified_chinese: 'Simplified Chinese',
 
-  welcome: 'Welcome'
+  welcome: 'Welcome',
 }

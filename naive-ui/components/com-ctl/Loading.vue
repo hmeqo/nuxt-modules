@@ -5,8 +5,8 @@ const props = withDefaults(
     throttle?: number
   }>(),
   {
-    throttle: 300
-  }
+    throttle: 300,
+  },
 )
 
 const show = ref(false)

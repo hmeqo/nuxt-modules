@@ -3,7 +3,7 @@ export function zoomAtPoint(
   current: Transform,
   factor: number,
   center: Point,
-  limits: { min: number; max: number }
+  limits: { min: number; max: number },
 ): Transform {
   const newScale = Math.max(limits.min, Math.min(limits.max, current.scale * factor))
 
@@ -15,7 +15,7 @@ export function zoomAtPoint(
   return {
     scale: newScale,
     x: center.x - worldX * newScale,
-    y: center.y - worldY * newScale
+    y: center.y - worldY * newScale,
   }
 }
 

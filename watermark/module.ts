@@ -5,12 +5,12 @@ import type { ModuleOptions } from './types'
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@workspace-hmeqo/watermark',
-    configKey: 'watermark'
+    configKey: 'watermark',
   },
 
   defaults: {
     columns: 3,
-    count: 18
+    count: 18,
   },
 
   setup(options, nuxt) {
@@ -18,12 +18,12 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Pass module options to runtimeConfig object
     nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
-      watermark: options
+      watermark: options,
     })
 
     // Add components
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
-  }
+  },
 })

@@ -2,24 +2,24 @@ import { addComponentsDir, addImportsDir, createResolver, defineNuxtModule } fro
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/konva'
+    name: '@workspace-hmeqo/konva',
   },
 
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@workspace-hmeqo/konva/types'
+        types: '@workspace-hmeqo/konva/types',
       })
-    }
+    },
   },
 
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     addComponentsDir({
-      path: resolver.resolve('./components')
+      path: resolver.resolve('./components'),
     })
     addImportsDir(resolver.resolve('./composables'))
     addImportsDir(resolver.resolve('./utils'))
-  }
+  },
 })

@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         if (v) StyleProvider(Themes.dark)
         else StyleProvider(null)
       },
-      { immediate: true }
+      { immediate: true },
     )
   })
 })

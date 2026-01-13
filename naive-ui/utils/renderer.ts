@@ -14,7 +14,7 @@ export function naiveRenderIcon(data: {
 }) {
   return () =>
     h(data.type || NIcon, data.attr, {
-      default: () => data.content
+      default: () => data.content,
     })
 }
 
@@ -28,9 +28,9 @@ export function naiveRenderLink(text: string, url: RouteLocationRaw, attr?: VNod
         onClick: (e: Event) => {
           ;(e.target as HTMLAnchorElement)?.blur()
         },
-        draggable: false
+        draggable: false,
       },
-      () => text
+      () => text,
     )
 }
 
@@ -45,14 +45,14 @@ export const naiveRenderPopover =
           transition: 'none',
           paddingLeft: '12px',
           paddingRight: '12px',
-          backgroundColor: '#252525'
+          backgroundColor: '#252525',
         },
         placement: 'left',
         overlap: true,
-        ...opts?.popoverProps
+        ...opts?.popoverProps,
       },
       {
         trigger: () => node,
-        default: () => opts?.node?.(option) ?? `${option.label}`
-      }
+        default: () => opts?.node?.(option) ?? `${option.label}`,
+      },
     )

@@ -2,7 +2,7 @@ import { addImports, addPlugin, createResolver, defineNuxtModule } from '@nuxt/k
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/openapi'
+    name: '@workspace-hmeqo/openapi',
   },
 
   setup(options, nuxt) {
@@ -11,9 +11,9 @@ export default defineNuxtModule({
     // Add imports
     addImports({
       from: '@hmeqo/openapi-utils',
-      name: 'schemaToDefaults'
+      name: 'schemaToDefaults',
     })
 
     addPlugin(resolver.resolve('./plugins/sdk'))
-  }
+  },
 })

@@ -7,7 +7,7 @@ const borderColor = computed(() => ((props.borderColor ?? useColorModeApi().dark
 const fill = computed(() => (useColorModeApi().darkMode.value ? '#111' : '#eee'))
 
 const {
-  world: { size: worldSize }
+  world: { size: worldSize },
 } = useKonvaContext()
 </script>
 

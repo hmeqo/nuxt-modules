@@ -10,7 +10,7 @@ import type {
   MouseButton,
   Point,
   Size,
-  Transform
+  Transform,
 } from '../types'
 
 const KEY: InjectionKey<KonvaContext> = Symbol('KonvaContext')
@@ -18,7 +18,7 @@ const KEY: InjectionKey<KonvaContext> = Symbol('KonvaContext')
 export function defineKonvaContext(
   containerRef: Ref<HTMLElement | null>,
   logicalSize: Size,
-  interactionConfig: InteractionConfig = {}
+  interactionConfig: InteractionConfig = {},
 ) {
   // --- State Initialization ---
   const screenSize = ref<Size>({ width: 1, height: 1 })
@@ -58,7 +58,7 @@ export function defineKonvaContext(
     screen: {
       screenSize: screenSize,
       center: computed(() => ({ x: screenSize.value.width / 2, y: screenSize.value.height / 2 })),
-      stageConfig: computed(() => screenSize.value)
+      stageConfig: computed(() => screenSize.value),
     },
     world: {
       size: worldSize,
@@ -68,14 +68,14 @@ export function defineKonvaContext(
         x: transform.value.x,
         y: transform.value.y,
         scaleX: transform.value.scale,
-        scaleY: transform.value.scale
-      }))
+        scaleY: transform.value.scale,
+      })),
     },
     mouse: {
       screen: mouseScreen,
       world: mouseWorld,
       isInside: isMouseInside,
-      isDragging
+      isDragging,
     },
     meta: ref<KonvaCtxMeta>({}),
     // --- 事件总线 (Event Bus) ---
@@ -84,7 +84,7 @@ export function defineKonvaContext(
       map: new Proxy(<Record<string, ((...args: any[]) => any)[]>>{}, {
         get: (target, key: string) => {
           return target[key] || (target[key] = [])
-        }
+        },
       }),
       on: <T extends keyof KonvaCtxEvents>(event: T, cb: KonvaCtxEvents[T]) => context.events.map[event]!.push(cb),
       emit: <T extends keyof KonvaCtxEvents>(event: T, ...params: Parameters<KonvaCtxEvents[T]>) =>
@@ -97,13 +97,13 @@ export function defineKonvaContext(
         onMouseleave: (e: KonvaMouseEvent) => context.events.emit('mouseleave', e),
         onMousedown: (e: KonvaMouseEvent) => context.events.emit('mousedown', e),
         onMouseup: (e: KonvaMouseEvent) => context.events.emit('mouseup', e),
-        onWheel: (e: KonvaWheelEvent) => context.events.emit('wheel', e)
-      }
+        onWheel: (e: KonvaWheelEvent) => context.events.emit('wheel', e),
+      },
     },
     // --- 工具函数 (Helpers) ---
     screenToWorld,
     worldToScreen,
-    switchMode
+    switchMode,
   }
 
   // --- Activate Sub-modules ---
@@ -133,7 +133,7 @@ function useContainerObserver(ctx: KonvaContext) {
       // 使用 contentRect 获取精确像素大小
       ctx.screen.screenSize.value = {
         width: entry.contentRect.width,
-        height: entry.contentRect.height
+        height: entry.contentRect.height,
       }
     }
     ctx.events.emit('resize')
@@ -182,7 +182,7 @@ function useAutoFit(ctx: KonvaContext) {
 const btnMap: Record<MouseButton, number> = {
   left: 0,
   middle: 1,
-  right: 2
+  right: 2,
 }
 
 /**
@@ -240,7 +240,7 @@ function useManualInteraction(ctx: KonvaContext, config: InteractionConfig) {
 
     ctx.world.transform.value = zoomAtPoint(ctx.world.transform.value, factor, center, {
       min: minScale,
-      max: maxScale
+      max: maxScale,
     })
   })
 }

@@ -10,8 +10,8 @@ const props = withDefaults(
     padding?: string
   }>(),
   {
-    padding: 'px-6 py-5'
-  }
+    padding: 'px-6 py-5',
+  },
 )
 </script>
 
