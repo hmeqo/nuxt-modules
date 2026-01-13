@@ -1,0 +1,9 @@
+{
+  "name": "@workspace-hmeqo/alova",
+  "version": "0.1.0",
+  "dependencies": {
+    "@workspace-hmeqo/util": "workspace:^",
+    "@alova/wormhole": "^1.5.0",
+    "alova": "^3.4.1"
+  }
+}
