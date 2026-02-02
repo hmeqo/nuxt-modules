@@ -1,4 +1,4 @@
-type NoPromise<T> = T extends Promise<any> ? never : T
+type NoPromise<T> = T extends Promise<unknown> ? never : T
 
 export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => NoPromise<R>): ((...args: A) => R) => {
   let hasResult = false

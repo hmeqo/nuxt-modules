@@ -3,7 +3,7 @@ import type Konva from 'konva'
 import type { CircleShape, DrawingMode, GeometryData, RectShape, ShapeData } from '../../types'
 
 const props = defineProps<{ drawingColor?: string }>()
-const emit = defineEmits<{ (e: 'select', id: string | null): void }>()
+const emit = defineEmits<{ select: [id: string | null] }>()
 
 // 使用定义的类型
 const shapes = defineModel<ShapeData[]>('modelValue', { default: [] })

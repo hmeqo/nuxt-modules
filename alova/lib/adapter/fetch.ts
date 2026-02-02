@@ -1,19 +1,26 @@
 import type { Method } from 'alova'
-import type { RequestInfo, ResponseInfo } from '../handlers'
+import type { RequestInfo, ResponseInfo } from '../event'
 
 export const toRequestInfo = (method: Method): RequestInfo => ({
+  get method() {
+    return method.type
+  },
+
   get data() {
     return method.data
   },
   set data(v) {
     method.data = v
   },
+
   get meta() {
     return method.meta as Record<string, unknown>
   },
+
   get headers() {
     return method.config.headers
   },
+
   get credentials() {
     return method.config.credentials
   },

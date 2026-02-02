@@ -1,17 +1,49 @@
-export interface EventMap<R, S> {
-  'request:start': { request: R }
-  'request:success': { request: R; response: S; data: unknown }
-  'request:error': { request: R; error?: unknown; data?: unknown }
-  'request:complete': { request: R }
-  'request:internet_error': { error: Error; request: R }
+import type { AlovaCustomTypeMeta } from '../types'
+
+export interface RequestInfo {
+  method: string
+  data?: unknown
+  meta?: AlovaCustomTypeMeta
+  headers: Record<string, string>
+  credentials?: string
+}
+
+export interface ResponseInfo {
+  status: number
+  ok: boolean
+  headers: { get: (name: string) => string | null }
+}
+
+export interface EventGenerics<Req extends RequestInfo = RequestInfo, Resp extends ResponseInfo = ResponseInfo> {
+  Req: Req
+  Resp: Resp
+}
+
+export class BizError extends Error {
+  constructor(
+    public response: ResponseInfo,
+    public request: RequestInfo,
+    public data: unknown,
+  ) {
+    super('Business error')
+  }
+}
+
+export interface EventMap<G extends EventGenerics, Req = G['Req'], Resp = G['Resp']> {
+  'request:start': { request: Req }
+  'request:success': { request: Req; response: Resp; data: unknown }
+  'request:error': { request: Req; error: unknown; data?: unknown }
+  'request:unknown_error': { request: Req; error: unknown; data?: unknown }
+  'request:bizerror': { request: Req; error: BizError; data?: unknown }
+  'request:complete': { request: Req }
 }
 
 export type EventSubscriber<T> = (data: T) => void
 
-export type EventSystem<R, S> = ReturnType<typeof createEventSystem<R, S>>
+export type EventSystem<G extends EventGenerics> = ReturnType<typeof createEventSystem<G>>
 
-export const createEventSystem = <R, S>() => {
-  type M = EventMap<R, S>
+export const createEventSystem = <G extends EventGenerics>() => {
+  type M = EventMap<G>
   const subscribers = defaultDict<keyof M, EventSubscriber<M[keyof M]>[]>(() => [])
 
   return {
@@ -24,7 +56,9 @@ export const createEventSystem = <R, S>() => {
       subscribers[type] = subscribers[type].filter((h) => h !== handler)
     },
     emit<K extends keyof M>(type: K, data: M[K]) {
-      subscribers[type].forEach((handler) => handler(data as M[keyof M]))
+      for (const handler of subscribers[type]) {
+        handler(data)
+      }
     },
   }
 }

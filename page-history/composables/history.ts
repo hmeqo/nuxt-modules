@@ -8,8 +8,8 @@ type Path = {
 }
 
 export const usePageHistory = () => {
-  const paths = usePiniaState<Path[]>('page-history-paths', { default: () => [] })
-  const enabledStore = usePiniaCache<StrBoolean>('page-history-enabled', { default: () => 'true' })
+  const paths = useSessionState<Path[]>('page-history-paths', { default: () => [] })
+  const enabledStore = useCookieState<StrBoolean>('page-history-enabled', { default: () => 'true' })
   const enabled = computed({ get: () => enabledStore.value === 'true', set: (v) => (enabledStore.value = `${v}`) })
 
   function clearPaths(opts?: { exceptCurrent?: boolean }) {

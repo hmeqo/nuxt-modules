@@ -1,9 +1,7 @@
 import { dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui'
 
 export const useNaiveConfig = () => {
-  if (typeof useLocale === 'undefined') return {}
-
-  const locale = useLocale()
+  const { locale } = useNuxtApp().$i18n
 
   const naiveDateLocale = computed(() => {
     switch (locale.value) {

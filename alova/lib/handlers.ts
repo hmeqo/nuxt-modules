@@ -1,24 +1,4 @@
-import type { AlovaCustomTypeMeta } from '../types/alova'
-import type { EventSystem } from './event'
-
-export interface RequestInfo {
-  data?: unknown
-  meta?: AlovaCustomTypeMeta
-  headers: Record<string, string>
-  credentials?: string
-}
-
-export interface ResponseInfo {
-  status: number
-  ok: boolean
-  headers: { get: (name: string) => string | null }
-}
-
-export class BizError extends Error {
-  constructor(public response: ResponseInfo) {
-    super('Business error')
-  }
-}
+import { BizError, type EventGenerics, type EventSystem } from './event'
 
 /**
  * Transform the data to FormData
@@ -38,12 +18,16 @@ export type CreateAlovaHandlersOpts = {
   credentials?: RequestCredentials
 }
 
-export const createAlovaHandlers = <R extends RequestInfo, S extends ResponseInfo>(
-  emit: EventSystem<R, S>['emit'],
+export const createAlovaHandlers = <
+  G extends EventGenerics,
+  Req extends G['Req'] = G['Req'],
+  Resp extends G['Resp'] = G['Resp'],
+>(
+  emit: EventSystem<G>['emit'],
   opts?: CreateAlovaHandlersOpts,
 ) => {
   return {
-    beforeRequest: (request: R) => {
+    beforeRequest: (request: Req) => {
       request.credentials = opts?.credentials
 
       const meta = request.meta
@@ -55,22 +39,21 @@ export const createAlovaHandlers = <R extends RequestInfo, S extends ResponseInf
 
       emit('request:start', { request })
     },
-    onSuccess: <T>(response: S, request: R, data: T): T => {
+    onSuccess: <T>(response: Resp, request: Req, data: T): T => {
       if (!response.ok || response.status >= 400) {
-        throw new BizError(response)
+        const error = new BizError(response, request, data)
+        emit('request:bizerror', { error, request, data })
+        emit('request:error', { request, error, data })
+        throw error
       }
-
       emit('request:success', { response, request, data })
       return data
     },
-    onError: <E, T>(error: E, request: R, data: T): E => {
-      if (error instanceof Error) {
-        emit('request:internet_error', { error, request })
-      }
+    onError: <E, T>(error: E, request: Req, data: T) => {
+      emit('request:unknown_error', { request, error, data })
       emit('request:error', { request, error, data })
-      throw { error, request, data }
     },
-    onComplete: (request: R) => {
+    onComplete: (request: Req) => {
       emit('request:complete', { request })
     },
   }

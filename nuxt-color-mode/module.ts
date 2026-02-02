@@ -1,4 +1,4 @@
-import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { ModuleOptions as ColorModeModuleOptions } from '@nuxtjs/color-mode'
 
 export default defineNuxtModule({
@@ -10,7 +10,7 @@ export default defineNuxtModule({
     '@nuxtjs/color-mode': {
       defaults: <Partial<ColorModeModuleOptions>>{
         classSuffix: '',
-        // storage: 'cookie',
+        storage: 'cookie',
         storageKey: 'color-mode',
       },
     },

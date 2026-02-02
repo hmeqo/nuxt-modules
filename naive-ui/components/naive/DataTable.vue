@@ -25,8 +25,8 @@ const checkedRowKeys = defineModel<any[]>('checked-row-keys', { default: () => [
 const selectedIndex = ref<number>()
 const clickedAt = ref(Date.now())
 
-const page = usePiniaState(`${props.stateKey}-page`, { default: () => 1 })
-const pageSize = usePiniaCache<number | undefined>(`${props.stateKey}-page-size`)
+const page = useSessionState(`${props.stateKey}-page`, { default: () => 1 })
+const pageSize = useCookieState<number | undefined>(`${props.stateKey}-page-size`)
 
 const menuPosition = ref({ x: 0, y: 0 })
 const select = (row: unknown, index?: number) => {

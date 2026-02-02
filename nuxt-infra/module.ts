@@ -52,10 +52,6 @@ export default defineNuxtModule({
 
     addPlugin(resolver.resolve('./plugins/error.ts'))
 
-    // Add composables
-    addImportsDir(resolver.resolve('./composables'))
-
-    // Add utils
-    addImportsDir(resolver.resolve('./utils'))
+    addImportsDir([resolver.resolve('./composables'), resolver.resolve('./utils'), resolver.resolve('./stores')])
   },
 })

@@ -1,27 +1,21 @@
-import type { Composer } from 'vue-i18n'
+import type { Locale } from 'vue-i18n'
 
-let cachedI18n: Composer
+export const $t = (key: string | number) => useCachedI18n().t(key)
 
-export const useCachedI18n = () => {
-  cachedI18n ??= useI18n()
-  const { locale, setLocale, availableLocales } = cachedI18n
+export const useCachedI18n = defineCachedFn(() => {
+  return useI18n()
+})
 
-  const langCookie = useLangCookie({ default: () => locale.value })
-
-  if (langCookie.value) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (availableLocales.includes(langCookie.value as any)) setLocale((locale.value = langCookie.value)) as any
-    else langCookie.value = locale.value
-  }
-  return cachedI18n
+export const useLangCookie = <T = Locale>(opts?: { default?: () => T }) => {
+  // @ts-expect-error cookieKey may not exist
+  const cookieKey = useRuntimeConfig().public.i18n?.cookieKey || 'language'
+  return useCookie<T>(cookieKey, { maxAge: 60 * 60 * 24 * 3650, default: opts?.default })
 }
 
-export const $t = (key: string | number) => cachedI18n.t(key)
+export const useCachedLocalePath = defineCachedFn(() => {
+  return useLocalePath()
+})
 
-export const useLocale = () => {
-  return useCachedI18n().locale
-}
-
-export const useLangCookie = <T = string>(opts?: { default?: () => T }) => {
-  return useCookie<T>('language', { maxAge: 60 * 60 * 24 * 3650, default: opts?.default })
+export const $localePath = (...opts: Parameters<ReturnType<typeof useLocalePath>>) => {
+  return useCachedLocalePath()(...opts)
 }

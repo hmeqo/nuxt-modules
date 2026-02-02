@@ -17,8 +17,8 @@ const props = withDefaults(
   { closable: true, maskClosable: true, escClosable: true },
 )
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'update:show', v: boolean): void
+  close: []
+  'update:show': [v: boolean]
 }>()
 const show = defineModel<boolean>('show', { required: true })
 
