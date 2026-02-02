@@ -4,7 +4,7 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-vue-next": "^0.562.0",
+    "lucide-vue-next": "^0.563.0",
     "radix-vue": "^1.9.17",
     "shadcn-nuxt": "^2.4.3",
     "tailwind-merge": "^3.4.0",

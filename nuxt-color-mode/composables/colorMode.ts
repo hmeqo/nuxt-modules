@@ -2,20 +2,9 @@ type ColorMode = 'dark' | 'light'
 
 type ColorModePreference = ColorMode | 'system'
 
-const cache: {
-  nuxtColorMode?: ReturnType<typeof useColorMode>
-  colorModeApi?: {
-    colorModePreference: WritableComputedRef<ColorModePreference>
-    colorMode: WritableComputedRef<ColorMode>
-    darkMode: WritableComputedRef<boolean>
-  }
-} = {}
+const useNuxtColorMode = defineCachedFn(useColorMode)
 
-const useNuxtColorMode = () => (cache.nuxtColorMode ??= useColorMode())
-
-export const useColorModeApi = () => {
-  if (cache.colorModeApi) return cache.colorModeApi
-
+export const useColorModeApi = defineCachedFn(() => {
   const colorModePreference = computed({
     get: () => useNuxtColorMode().preference as ColorModePreference,
     set: (v) => {
@@ -33,12 +22,14 @@ export const useColorModeApi = () => {
 
   const darkMode = computed({
     get: () => colorMode.value === 'dark',
-    set: (v) => (colorMode.value = v ? 'dark' : 'light'),
+    set: (v) => {
+      colorMode.value = v ? 'dark' : 'light'
+    },
   })
 
-  return (cache.colorModeApi = {
+  return {
     colorModePreference,
     colorMode,
     darkMode,
-  })
-}
+  }
+})
