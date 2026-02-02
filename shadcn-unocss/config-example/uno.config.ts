@@ -16,18 +16,8 @@ export default defineConfig(
       presets: [presetIcons()],
       transformers: [transformerVariantGroup(), transformerDirectives(), transformerCompileClass()],
       theme: {
-        fontFamily: {
-          mono: [
-            'Maple Mono',
-            'ui-monospace',
-            'SFMono-Regular',
-            'Menlo',
-            'Monaco',
-            'Consolas',
-            'Liberation Mono',
-            'Courier New',
-            'monospace',
-          ],
+        font: {
+          mono: ['"Maple Mono"', 'monospace'],
         },
       },
       shortcuts: {
