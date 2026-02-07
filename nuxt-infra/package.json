@@ -11,6 +11,7 @@
     "@nuxtjs/device": "^4.0.0",
     "@nuxtjs/seo": "^3.4.0",
     "@vueuse/nuxt": "^14.2.0",
+    "@workspace-hmeqo/util": "workspace:^",
     "@workspace-hmeqo/nuxt-color-mode": "workspace:^",
     "@workspace-hmeqo/nuxt-web-kit": "workspace:^",
     "copy-to-clipboard": "^3.3.3",
