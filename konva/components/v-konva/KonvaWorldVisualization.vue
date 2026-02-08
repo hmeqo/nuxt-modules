@@ -3,8 +3,10 @@ const props = defineProps<{
   borderColor?: string
 }>()
 
-const borderColor = computed(() => ((props.borderColor ?? useColorModeApi().darkMode.value) ? '#333' : '#ddd'))
-const fill = computed(() => (useColorModeApi().darkMode.value ? '#111' : '#eee'))
+const { darkMode } = useThemeMode()
+
+const borderColor = computed(() => ((props.borderColor ?? darkMode.value) ? '#333' : '#ddd'))
+const fill = computed(() => (darkMode.value ? '#111' : '#eee'))
 
 const {
   world: { size: worldSize },

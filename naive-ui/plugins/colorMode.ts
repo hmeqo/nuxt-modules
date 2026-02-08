@@ -1,6 +1,6 @@
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('app:mounted', () => {
-    const { colorMode } = useColorModeApi()
+    const { colorMode } = useThemeMode()
 
     watch(
       colorMode,

@@ -4,7 +4,7 @@ type ColorModePreference = ColorMode | 'system'
 
 const useNuxtColorMode = defineCachedFn(useColorMode)
 
-export const useColorModeApi = defineCachedFn(() => {
+export const useThemeMode = defineCachedFn(() => {
   const colorModePreference = computed({
     get: () => useNuxtColorMode().preference as ColorModePreference,
     set: (v) => {

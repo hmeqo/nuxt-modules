@@ -2,7 +2,7 @@ import { StyleProvider, Themes } from '@varlet/ui'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('app:mounted', () => {
-    const { darkMode } = useColorModeApi()
+    const { darkMode } = useThemeMode()
 
     watch(
       darkMode,
