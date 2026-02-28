@@ -1,17 +1,11 @@
+import type { RouteLocationAsString } from 'vue-router'
 import type { ModuleOptions } from '../../types'
-import { hasPermission, type Permission } from './base'
+import { hasPermission, type PermT } from './base'
 
 type RouteTo =
-  | string
+  | RouteLocationAsString
   | {
-      /**
-       * url to navigate
-       */
-      path: string
-      /**
-       * redirect to url instead of navigation
-       * @default false
-       */
+      path: RouteLocationAsString
       redirect?: boolean
     }
 
@@ -20,7 +14,7 @@ type RouteCase = {
    * authentication permissions
    * @default undefined
    */
-  auth: Permission[]
+  auth: PermT[]
   /**
    * route to url when authentication succeeds
    * @default undefined
@@ -38,7 +32,7 @@ type RouteAuthOptions = {
    * fallback url when authentication fails
    * @default undefined
    */
-  fallback?: RouteTo
+  fallback?: RouteLocationAsString
   /**
    * throw error if all authentication fails
    * @default false
@@ -46,7 +40,7 @@ type RouteAuthOptions = {
   showError?: boolean
 }
 
-function redirectTo(to: string) {
+function redirectTo(to: RouteLocationAsString) {
   if (!to.startsWith('http')) to = `${location.origin}${to}`
   location.href = to
 }

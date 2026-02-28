@@ -7,7 +7,6 @@
  * useQueryInt(['page', 'p'], { default: () => 1 }) // query 'page' has higher priority
  */
 
-import { ensureEndSlash, ensureStartSlash } from '@hmeqo/paths'
 import type { LocationQueryRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 
 type Opts<T> = {
@@ -128,9 +127,9 @@ function _useQuery<T>(keyOrKeys: string | string[], serializer: Serializer<T>, o
   })
 }
 
-function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<T>, opts?: Opts<T>) {
+function _usePathParam<T>(key: string, serializer: Serializer<T>, opts?: Opts<T>) {
   const route = (opts?.route || useRoute()) as RouteLocationNormalizedLoaded & {
-    meta: { __usePathParam: { endpoint: string; key: string; oldValue: unknown; newValue: unknown }[] }
+    meta: { __usePathParam: { key: string; oldValue: unknown; newValue: unknown }[] }
   }
 
   const data = ref<T | undefined>(serializer.in(route.params[key as keyof typeof route.params]))
@@ -144,22 +143,20 @@ function _usePathParam<T>(key: string, endpoint: string, serializer: Serializer<
       route.meta.__usePathParam = {
         ...route.meta.__usePathParam,
         [key]: {
-          endpoint: ensureStartSlash(ensureEndSlash(endpoint)),
           oldValue: route.params[key as keyof typeof route.params]?.[0],
           newValue: value,
         },
       }
-      navigateTo({
-        path: Object.values(route.meta.__usePathParam).reduce(
-          (path, { endpoint, oldValue, newValue }) => path.replace(`${endpoint}${oldValue}`, `${endpoint}${newValue}`),
-          route.path,
-        ),
-        query: route.query,
-        replace: true,
-      })
+      // navigateTo({
+      //   path: Object.values(route.meta.__usePathParam).reduce(
+      //     (path, { oldValue, newValue }) => path.replace(`${endpoint}${oldValue}`, `${endpoint}${newValue}`),
+      //     route.path,
+      //   ),
+      //   query: route.query,
+      //   replace: true,
+      // })
     },
-    errorMessage: () =>
-      `Cannot parse path param ${key} of endpoint ${endpoint}: ${route.params[key as keyof typeof route.params]}`,
+    errorMessage: () => `Cannot parse path param ${key}: ${route.params[key as keyof typeof route.params]}`,
     opts,
   })
 }
@@ -179,12 +176,11 @@ export function toUseQuery<A>(serializer: Serializer<A>) {
 export function toUsePathParam<A>(serializer: Serializer<A>) {
   function usePathParam<T = A>(
     key: string,
-    endpoint: string,
     opts: Opts<T> & ({ default: () => T } | { showError: true } | { fallback: string }),
   ): Ref<T>
-  function usePathParam<T = A>(key: string, endpoint: string, opts?: Opts<T>): Ref<T | undefined>
-  function usePathParam(key: string, endpoint: string, opts?: Opts<A>) {
-    return _usePathParam<A>(key, endpoint, serializer, opts)
+  function usePathParam<T = A>(key: string, opts?: Opts<T>): Ref<T | undefined>
+  function usePathParam(key: string, opts?: Opts<A>) {
+    return _usePathParam<A>(key, serializer, opts)
   }
   return usePathParam
 }

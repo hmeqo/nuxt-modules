@@ -6,4 +6,4 @@ const unoBreakpoints = {
   '2xl': 1536,
 }
 
-export const useBP = defineCachedFn(() => useBreakpoints(unoBreakpoints))
+export const useUnoBreakPoints = defineCachedFn(() => useBreakpoints(unoBreakpoints))

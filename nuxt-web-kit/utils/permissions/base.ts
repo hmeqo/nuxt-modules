@@ -1,21 +1,15 @@
-export function getPermission(...permissions: Permission[]): Permission | undefined {
+export function getPermission(...permissions: PermT[]): PermT | undefined {
   for (const p of permissions) {
-    if (p.verify()) return p
+    if (typeof p === 'function') {
+      if (p()) return p
+    } else {
+      if (unref(p)) return p
+    }
   }
 }
 
-export function hasPermission(...permissions: Permission[]): boolean {
+export function hasPermission(...permissions: PermT[]): boolean {
   return !!getPermission(...permissions)
 }
 
-export type Permission = {
-  verify(): boolean
-}
-
-export function createPermission(verify: Permission['verify']): Permission {
-  return {
-    verify() {
-      return verify()
-    },
-  }
-}
+export type PermT = (() => boolean) | MaybeRef<boolean>

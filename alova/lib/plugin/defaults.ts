@@ -21,7 +21,7 @@ export interface DefaultsPluginOpts {
 
 interface GenContext {
   opts?: DefaultsPluginOpts
-  enumFieldNames: string[]
+  dataFieldNames: string[]
   isOptionalBlock: boolean
 }
 
@@ -99,10 +99,9 @@ const getPrimitiveDefault = (name: string, schema: OpenAPISchemaObject, opts?: D
 const generateFieldValue = (fieldName: string, schema: OpenAPISchema, ctx: GenContext): string => {
   if (isRef(schema)) {
     const refName = getRefName(schema.$ref)
-    if (ctx.enumFieldNames.includes(refName)) {
+    if (ctx.dataFieldNames.includes(refName)) {
       return `${defaultFnName(refName)}()`
     }
-    // 如果在 optional 块中，递归调用默认开启 fillAll
     if (ctx.isOptionalBlock) {
       return `${defaultFnName(refName)}({ fillAll: true })`
     }
@@ -122,52 +121,32 @@ const generateFieldValue = (fieldName: string, schema: OpenAPISchema, ctx: GenCo
   return 'undefined'
 }
 
-export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPluginOpts) => ({
-  afterOpenapiParse(document) {
-    const schemas: OpenAPISchemas = document.components?.schemas ?? {}
-    if (!schemas || Object.keys(schemas).length === 0) return
+const generateObjectDefault = (
+  name: string,
+  schema: OpenAPISchemaObject,
+  dataFieldNames: string[],
+  opts?: DefaultsPluginOpts,
+) => {
+  if (!schema.properties) throw new Error(`Schema ${name} has no properties`)
 
-    let code = RUNTIME_HELPER_CODE
-    const enumFieldNames: string[] = []
+  const requiredKeys = new Set(schema.required ?? [])
+  const baseLines: string[] = []
+  const optionalLines: string[] = []
 
-    // 1. 生成 Enum
-    for (const [name, schema] of Object.entries(schemas)) {
-      if (!isSchemaObject(schema)) continue
-      if (opts?.filter && !opts.filter(name, schema)) continue
+  for (const [fieldName, prop] of Object.entries(schema.properties)) {
+    const isRequired = requiredKeys.has(fieldName)
+    const fieldValue = generateFieldValue(fieldName, prop, {
+      opts,
+      dataFieldNames,
+      isOptionalBlock: !isRequired,
+    })
 
-      if (schema.enum?.length) {
-        code += `
-export const ${defaultFnName(name)} = (): Types.${name} => ${JSON.stringify(schema.enum[0])}
-`
-        enumFieldNames.push(name)
-      }
-    }
+    const line = `${fieldName}: ${fieldValue}`
+    if (isRequired) baseLines.push(line)
+    else optionalLines.push(line)
+  }
 
-    // 2. 生成 Object
-    for (const [name, schema] of Object.entries(schemas)) {
-      if (!isSchemaObject(schema)) continue
-      if (opts?.filter && !opts.filter(name, schema)) continue
-      if (enumFieldNames.includes(name)) continue
-
-      if (schema.type === 'object' && schema.properties) {
-        const requiredKeys = new Set(schema.required ?? [])
-        const baseLines: string[] = []
-        const optionalLines: string[] = []
-
-        for (const [fieldName, prop] of Object.entries(schema.properties)) {
-          const isRequired = requiredKeys.has(fieldName)
-          const fieldValue = generateFieldValue(fieldName, prop, {
-            opts,
-            enumFieldNames,
-            isOptionalBlock: !isRequired,
-          })
-
-          const line = `${fieldName}: ${fieldValue}`
-          if (isRequired) baseLines.push(line)
-          else optionalLines.push(line)
-        }
-
-        code += `
+  return `
 export const ${defaultFnName(name)} = defineDefault<Types.${name}>(
   (fillAll) => ({
 ${baseLines.map((l) => `    ${l}`).join(',\n')}
@@ -177,6 +156,46 @@ ${optionalLines.map((l) => `    ${l}`).join(',\n')}
   })
 )
 `
+}
+
+export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPluginOpts) => ({
+  afterOpenapiParse(document) {
+    const schemas: OpenAPISchemas = document.components?.schemas ?? {}
+    if (!schemas || Object.keys(schemas).length === 0) return
+
+    let code = RUNTIME_HELPER_CODE
+    const dataFieldNames: string[] = []
+
+    // 1. 生成默认值函数
+    for (const [name, schema] of Object.entries(schemas)) {
+      if (!isSchemaObject(schema)) continue
+      if (opts?.filter && !opts.filter(name, schema)) continue
+
+      if (schema.enum?.length) {
+        code += `
+export const ${defaultFnName(name)} = (): Types.${name} => ${JSON.stringify(schema.enum[0])}
+`
+        dataFieldNames.push(name)
+      } else if (schema.type === 'integer') {
+        code += `export const ${defaultFnName(name)} = (): number => ${getPrimitiveDefault(name, schema, opts)}
+`
+        dataFieldNames.push(name)
+      }
+    }
+
+    // 2. 生成 Object
+    for (const [name, schema] of Object.entries(schemas)) {
+      if (!isSchemaObject(schema)) continue
+      if (opts?.filter && !opts.filter(name, schema)) continue
+      if (dataFieldNames.includes(name)) continue
+
+      if (schema.type === 'object' && schema.properties) {
+        code += generateObjectDefault(name, schema, dataFieldNames, opts)
+      } else if (schema.allOf || schema.anyOf || schema.oneOf) {
+        const firstOf = schema.allOf?.[0] ?? schema.anyOf?.[0] ?? schema.oneOf?.[0]
+        if (firstOf) {
+          code += generateObjectDefault(name, firstOf as OpenAPISchemaObject, dataFieldNames, opts)
+        }
       }
     }
 
