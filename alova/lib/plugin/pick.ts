@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {
   getRefName,
+  isEnum,
   isRef,
   isSchemaObject,
   type OpenAPISchema,
@@ -81,8 +82,8 @@ const generateFieldExpr = (fieldName: string, schema: OpenAPISchema, schemas: Op
   if (isRef(schema)) {
     const refName = getRefName(schema.$ref)
     const target = schemas[refName]
-    // 仅对 Object 类型的 Ref 进行递归 Pick
-    if (target && isSchemaObject(target) && target.type === 'object') {
+    // 仅对 Object 类型的 Ref 进行递归 Pick，且排除 Enum 类型
+    if (target && isSchemaObject(target) && target.type === 'object' && !isEnum(target)) {
       return `${pickFnName(refName)}(${access}, opts)`
     }
     return access
@@ -90,11 +91,18 @@ const generateFieldExpr = (fieldName: string, schema: OpenAPISchema, schemas: Op
 
   if (!isSchemaObject(schema)) return access
 
+  // 排除 Enum 类型
+  if (isEnum(schema)) return access
+
   if (schema.type === 'array' && schema.items) {
     const items = schema.items
     if (isRef(items)) {
       const refName = getRefName(items.$ref)
-      return `${access}?.map((i: any) => ${pickFnName(refName)}(i, opts))`
+      const target = schemas[refName]
+      // 仅对 Object 类型的 Ref 进行递归 Pick，且排除 Enum 类型
+      if (target && isSchemaObject(target) && target.type === 'object' && !isEnum(target)) {
+        return `${access}?.map((i: any) => ${pickFnName(refName)}(i, opts))`
+      }
     }
     return access
   }

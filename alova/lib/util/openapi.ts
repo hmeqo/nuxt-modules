@@ -8,6 +8,7 @@ export type OpenAPISchemas = Record<string, OpenAPISchema>
 
 export const isRef = (s: OpenAPISchema): s is OpenAPIReferenceObject => '$ref' in s
 export const isSchemaObject = (s: OpenAPISchema): s is OpenAPISchemaObject => !isRef(s)
+export const isEnum = (s: OpenAPISchema): boolean => isSchemaObject(s) && 'enum' in s
 export const getRefName = (ref: string) => ref.split('/').pop()!
 
 /** Convert object to compact string, e.g. { min: 1, max: 10 } */
