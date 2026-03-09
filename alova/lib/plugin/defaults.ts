@@ -5,7 +5,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { OpenAPIV3 } from 'openapi-types'
 import {
+  defaultFnName,
   getRefName,
+  getTypeName,
   isRef,
   isSchemaObject,
   type OpenAPISchema,
@@ -49,8 +51,6 @@ const defineDefault = <T>(
   return def
 }
 `
-
-const defaultFnName = (schemaName: string) => `default${schemaName[0].toUpperCase()}${schemaName.slice(1)}`
 
 const getPrimitiveDefault = (name: string, schema: OpenAPISchemaObject, opts?: DefaultsPluginOpts): string => {
   if (opts?.customDefaultExpr) {
@@ -147,7 +147,7 @@ const generateObjectDefault = (
   }
 
   return `
-export const ${defaultFnName(name)} = defineDefault<Types.${name}>(
+export const ${defaultFnName(name)} = defineDefault<Types.${getTypeName(name)}>(
   (fillAll) => ({
 ${baseLines.map((l) => `    ${l}`).join(',\n')}
   }),

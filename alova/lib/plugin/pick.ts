@@ -4,7 +4,9 @@ import { createPlugin } from '@alova/wormhole/plugin'
 import fs from 'node:fs'
 import path from 'node:path'
 import {
+  defaultFnName,
   getRefName,
+  getTypeName,
   isEnum,
   isRef,
   isSchemaObject,
@@ -53,7 +55,7 @@ const definePick = <T extends object>(
 }
 `
 
-const pickFnName = (schemaName: string) => `pick${schemaName[0].toUpperCase()}${schemaName.slice(1)}`
+const pickFnName = (schemaName: string) => `pick${getTypeName(schemaName)}`
 
 // 生成 PK 映射，如 { userId: obj?.user?.id }
 const generatePkExpr = (schema: OpenAPISchemaObject, pkRules: PkRule[]): string => {
@@ -130,12 +132,12 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
       }
 
       code += `
-export const ${pickFnName(name)} = definePick<Types.${name}>(
+export const ${pickFnName(name)} = definePick<Types.${getTypeName(name)}>(
   (obj, opts) => ({
 ${fieldLines.map((l) => `    ${l}`).join(',\n')}
   }),
   (obj) => (${pkExpr}),
-  defaults.default${name}
+  defaults.${defaultFnName(name)}
 )
 `
     }

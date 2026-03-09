@@ -11,6 +11,20 @@ export const isSchemaObject = (s: OpenAPISchema): s is OpenAPISchemaObject => !i
 export const isEnum = (s: OpenAPISchema): boolean => isSchemaObject(s) && 'enum' in s
 export const getRefName = (ref: string) => ref.split('/').pop()!
 
+export const getTypeName = (name: string) => {
+  const parts = name.split('.')
+  return parts
+    .map((part, index) => {
+      if (index === 0) {
+        return part.charAt(0).toUpperCase() + part.slice(1)
+      }
+      return part.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
+    })
+    .join('_')
+}
+
+export const defaultFnName = (schemaName: string) => `default${getTypeName(schemaName)}`
+
 /** Convert object to compact string, e.g. { min: 1, max: 10 } */
 export const toObjStr = (obj: Record<string, unknown>) => {
   const props = Object.entries(obj)
