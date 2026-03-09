@@ -127,13 +127,11 @@ const generateObjectDefault = (
   dataFieldNames: string[],
   opts?: DefaultsPluginOpts,
 ) => {
-  if (!schema.properties) throw new Error(`Schema ${name} has no properties`)
-
   const requiredKeys = new Set(schema.required ?? [])
   const baseLines: string[] = []
   const optionalLines: string[] = []
 
-  for (const [fieldName, prop] of Object.entries(schema.properties)) {
+  for (const [fieldName, prop] of Object.entries(schema.properties ?? schema.additionalProperties ?? {})) {
     const isRequired = requiredKeys.has(fieldName)
     const fieldValue = generateFieldValue(fieldName, prop, {
       opts,
@@ -189,7 +187,7 @@ export const ${defaultFnName(name)} = (): Types.${name} => ${JSON.stringify(sche
       if (opts?.filter && !opts.filter(name, schema)) continue
       if (dataFieldNames.includes(name)) continue
 
-      if (schema.type === 'object' && schema.properties) {
+      if (schema.type === 'object') {
         code += generateObjectDefault(name, schema, dataFieldNames, opts)
       } else if (schema.allOf || schema.anyOf || schema.oneOf) {
         const firstOf = schema.allOf?.[0] ?? schema.anyOf?.[0] ?? schema.oneOf?.[0]
