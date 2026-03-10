@@ -175,7 +175,8 @@ export const ${defaultFnName(name)} = (): Types.${name} => ${JSON.stringify(sche
 `
         dataFieldNames.push(name)
       } else if (schema.type === 'integer') {
-        code += `export const ${defaultFnName(name)} = (): number => ${getPrimitiveDefault(name, schema, opts)}
+        code += `
+export const ${defaultFnName(name)} = (): number => ${getPrimitiveDefault(name, schema, opts)}
 `
         dataFieldNames.push(name)
       }
