@@ -33,7 +33,11 @@ export const useOpen = (options: OpenOptions = {}) => {
   }
 
   function toggle() {
-    isOpen.value ? close() : open()
+    if (isOpen.value) {
+      close()
+    } else {
+      open()
+    }
   }
 
   return {
