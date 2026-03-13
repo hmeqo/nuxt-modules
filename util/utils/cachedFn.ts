@@ -1,4 +1,4 @@
-type NoPromise<T> = T extends Promise<unknown> ? never : T
+import type { NoPromise } from '../types'
 
 declare module '#app' {
   interface NuxtApp {
@@ -23,16 +23,5 @@ export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => NoPro
     // 否则执行函数，并将结果存入当前请求的上下文中
     const result = fn(...args)
     return (nuxtApp._cachedFn[key] = result)
-  }
-}
-
-export const defineCachedFnNoNuxt = <A extends unknown[], R>(fn: (...args: A) => NoPromise<R>): ((...args: A) => R) => {
-  let hasResult = false
-  let cachedResult: R
-  return (...args: A) => {
-    if (hasResult) return cachedResult
-    const result = fn(...args)
-    hasResult = true
-    return (cachedResult = result)
   }
 }
