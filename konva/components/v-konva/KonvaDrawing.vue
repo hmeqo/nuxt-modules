@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type Konva from 'konva'
+import { v4 as uuidv4 } from 'uuid'
 import type { CircleShape, DrawingMode, GeometryData, RectShape, ShapeData } from '../../types'
 
 const props = defineProps<{ drawingColor?: string }>()
@@ -144,7 +145,7 @@ const onBoardMouseUp = () => {
       let newShape: ShapeData
 
       const commonProps = {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         x: config.x,
         y: config.y,
         rotation: 0,

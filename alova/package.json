@@ -5,6 +5,7 @@
     "@alova/wormhole": "^1.5.0",
     "@workspace-hmeqo/util": "workspace:^",
     "alova": "^3.5.0",
-    "openapi-types": "^12.1.3"
+    "openapi-types": "^12.1.3",
+    "uuid": "^13.0.0"
   }
 }

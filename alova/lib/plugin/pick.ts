@@ -36,6 +36,10 @@ export type PickOpts = {
   filter?: (name: string) => boolean
   /** PK 映射规则 */
   pk?: PkRule[]
+  /** 关联对象的联合类型区分字段
+   * @default 'type'
+   */
+  unionType?: string
 }
 
 // ─── 运行时帮助代码（注入到生成文件头部）────────────────────────────────────
@@ -57,11 +61,11 @@ import type Types from './globals'
 const definePick = <T extends object>(
   pickFn: (obj: any) => Partial<T>,
   pkFn: (obj: any) => Partial<T>,
-  fn: () => T,
+  fn: (obj?: any) => T,
 ) => {
   function pick(obj: any): T
-  function pick<O extends object>(obj: any, fnOverride: () => O): O
-  function pick<O extends object>(obj: any, fnOverride?: () => O): T | O {
+  function pick<O extends object>(obj: any, fnOverride: (obj?: any) => O): O
+  function pick<O extends object>(obj: any, fnOverride?: (obj?: any) => O): T | O {
     const picked: Partial<T> = obj != null ? pickFn(obj) : {}
 
     if (obj != null) {
@@ -70,7 +74,7 @@ const definePick = <T extends object>(
       }
     }
 
-    for (const [k, v] of Object.entries((fnOverride ?? fn)())) {
+    for (const [k, v] of Object.entries((fnOverride ?? fn)(picked))) {
       const pickedV = picked[k as keyof T]
       if (pickedV === undefined || pickedV === null) picked[k as keyof T] = v as T[keyof T]
     }
@@ -207,9 +211,17 @@ ${fieldLines.join(',\n')}
 const buildDiscriminatedUnionPickFn = (
   name: string,
   variants: OpenAPISchemaObject[],
+  rawVariants: OpenAPISchema[],
   schemas: OpenAPISchemas,
+  opts?: PickOpts,
 ): string => {
-  const cases = extractDiscriminatedVariants(variants).map(({ typeValue, schema: variant }) => {
+  const { unionType = 'type' } = opts ?? {}
+  const cases = extractDiscriminatedVariants(variants, rawVariants).map(({ typeValue, schema: variant, refName }) => {
+    // 若变体来自 allOf [$ref, ...] 则直接调用对应 pickXxx 函数
+    if (refName) {
+      return `      case ${JSON.stringify(typeValue)}: return { ${unionType}: obj?.${unionType}, ...${pickFnName(refName)}(obj) }`
+    }
+
     const otherFields = Object.entries(variant.properties ?? {})
       .filter(([key]) => key !== 'type')
       .map(([key, prop]) => {
@@ -225,17 +237,20 @@ const buildDiscriminatedUnionPickFn = (
       })
 
     if (otherFields.length === 0) {
-      return `      case ${JSON.stringify(typeValue)}: return { type: obj?.type }`
+      return `      case ${JSON.stringify(typeValue)}: return { ${unionType}: obj?.${unionType} }`
     }
-    return `      case ${JSON.stringify(typeValue)}: return {\n        type: obj?.type,\n${otherFields.join(',\n')}\n      }`
+    return `      case ${JSON.stringify(typeValue)}: return {
+        type: obj?.${unionType},
+${otherFields.join(',\n')}
+      }`
   })
 
   return `
 export const ${pickFnName(name)} = definePick<Types.${getTypeName(name)}>(
   (obj) => {
-    switch (obj?.type) {
+    switch (obj?.${unionType}) {
 ${cases.join('\n')}
-      default: return { type: obj?.type }
+      default: return { type: obj?.${unionType} }
     }
   },
   (obj) => ({}),
@@ -265,12 +280,13 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
       }
 
       // oneOf/anyOf/allOf 联合类型
-      const schemaVariants = resolveSchemaVariants(schema)
+      const rawVariants = schema.oneOf ?? schema.anyOf ?? schema.allOf ?? []
+      const schemaVariants = resolveSchemaVariants(schema, schemas)
       if (schemaVariants.length === 0) continue
 
       if (isDiscriminatedUnion(schemaVariants)) {
         // Discriminated union：switch dispatch
-        code += buildDiscriminatedUnionPickFn(name, schemaVariants, schemas)
+        code += buildDiscriminatedUnionPickFn(name, schemaVariants, rawVariants, schemas, opts)
       } else {
         // 普通联合类型：取第一个 object 变体生成
         const firstObj = schemaVariants.find((v) => v.type === 'object' && v.properties)
