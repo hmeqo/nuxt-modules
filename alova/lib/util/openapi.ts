@@ -57,28 +57,76 @@ export interface DiscriminatedVariant {
 }
 
 /**
- * 判断 schema 是否为 discriminated union：
- * 所有变体均为 object 类型，且都有 type 字段（enum 只有 1 个值）
+ * 从第一个变体中自动检测 discriminator 字段：
+ * 找到一个字段，其 enum 只有 1 个值（固定值），且所有变体中该字段也均为固定 enum 值。
+ *
+ * @param variants 展开后的变体列表（resolveSchemaVariants 的结果）
+ * @param preferredField 优先使用的字段名（如配置了 unionType），若满足条件直接采用
+ * @returns 检测到的区分字段名，若不是 discriminated union 则返回 false
  */
-export const isDiscriminatedUnion = (variants: OpenAPISchemaObject[]): boolean => {
-  return variants.every((v) => {
-    if (v.type !== 'object') return false
-    const typeField = v.properties?.['type']
-    return typeField && isSchemaObject(typeField) && typeField.enum?.length === 1
-  })
+export const detectDiscriminatorField = (
+  variants: OpenAPISchemaObject[],
+  preferredField?: string,
+): string | false => {
+  if (variants.length === 0) return false
+  if (!variants.every((v) => v.type === 'object')) return false
+
+  const firstProps = variants[0].properties ?? {}
+
+  // 候选字段：从第一个变体的属性中找到所有 enum.length === 1 的字段
+  const candidates = Object.entries(firstProps)
+    .filter(([, prop]) => isSchemaObject(prop) && prop.enum?.length === 1)
+    .map(([key]) => key)
+
+  if (candidates.length === 0) return false
+
+  // 若指定了优先字段且它是候选之一，直接使用
+  if (preferredField && candidates.includes(preferredField)) {
+    const allHave = variants.every((v) => {
+      const f = v.properties?.[preferredField]
+      return f && isSchemaObject(f) && f.enum?.length === 1
+    })
+    if (allHave) return preferredField
+  }
+
+  // 否则按候选顺序找第一个所有变体都有固定 enum 值的字段
+  for (const field of candidates) {
+    const allHave = variants.every((v) => {
+      const f = v.properties?.[field]
+      return f && isSchemaObject(f) && f.enum?.length === 1
+    })
+    if (allHave) return field
+  }
+
+  return false
 }
+
+/**
+ * 判断 schema 是否为 discriminated union，并返回区分字段名。
+ * 自动从第一个变体中检测哪个字段是固定 enum 值。
+ *
+ * @param variants 展开后的变体列表（resolveSchemaVariants 的结果）
+ * @param preferredField 优先使用的字段名（如配置了 unionType）
+ * @returns 区分字段名，若不是 discriminated union 则返回 false
+ */
+export const isDiscriminatedUnion = (
+  variants: OpenAPISchemaObject[],
+  preferredField?: string,
+): string | false => detectDiscriminatorField(variants, preferredField)
 
 /**
  * 从已验证的 discriminated union 变体中提取 type 值、schema 和可选的 refName。
  * @param variants 展开后的变体列表（resolveSchemaVariants 的结果）
  * @param rawVariants 原始（展开前）的 oneOf/anyOf 变体列表，用于提取 allOf $ref 信息
+ * @param unionField 区分字段名（由 isDiscriminatedUnion/detectDiscriminatorField 检测得到）
  */
 export const extractDiscriminatedVariants = (
   variants: OpenAPISchemaObject[],
   rawVariants?: OpenAPISchema[],
+  unionField = 'type',
 ): DiscriminatedVariant[] => {
   return variants.map((variant, i) => {
-    const typeField = variant.properties!['type'] as OpenAPISchemaObject
+    const typeField = variant.properties![unionField] as OpenAPISchemaObject
     const raw = rawVariants?.[i]
     // 检查原始变体是否为 allOf [$ref, ...] 结构，提取 $ref 名称
     const refName =

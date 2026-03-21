@@ -1,8 +1,6 @@
 /// <reference types="node" />
 
 import { createPlugin } from '@alova/wormhole/plugin'
-import fs from 'node:fs'
-import path from 'node:path'
 import {
   extractDiscriminatedVariants,
   getRefName,
@@ -17,6 +15,7 @@ import {
   type OpenAPISchemaObject,
   type OpenAPISchemas,
 } from '../util/openapi'
+import { buildIfChain, writeGeneratedFile } from '../util/codegen'
 
 // ─── 插件配置 ─────────────────────────────────────────────────────────────────
 
@@ -57,6 +56,7 @@ export type PickOpts = {
 const RUNTIME_HELPER_CODE = `/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as defaults from './defaults'
 import type Types from './globals'
+import { deepFill } from '@workspace-hmeqo/util/lib'
 
 const definePick = <T extends object>(
   pickFn: (obj: any) => Partial<T>,
@@ -74,12 +74,10 @@ const definePick = <T extends object>(
       }
     }
 
-    for (const [k, v] of Object.entries((fnOverride ?? fn)(picked))) {
-      const pickedV = picked[k as keyof T]
-      if (pickedV === undefined || pickedV === null) picked[k as keyof T] = v as T[keyof T]
-    }
+    const source = (fnOverride ?? fn)(picked);
+    deepFill(picked, source);
 
-    return picked as T | O
+    return picked as T | O;
   }
   return pick
 }
@@ -113,6 +111,21 @@ const buildPkExpr = (schema: OpenAPISchemaObject, pkRules: PkRule[]): string => 
 // ─── 层 2：字段取值表达式生成 ─────────────────────────────────────────────────
 
 /**
+ * 判断一个 schema 是否为有具名属性的内联 object（需要展开取值）
+ */
+const isInlineObject = (prop: OpenAPISchema): prop is OpenAPISchemaObject =>
+  isSchemaObject(prop) && prop.type === 'object' && !!prop.properties && Object.keys(prop.properties).length > 0
+
+/**
+ * 判断一个 $ref 指向的 schema 是否需要递归 pick（object/union 类型且非 enum）
+ */
+const isPickableRef = (refName: string, schemas: OpenAPISchemas): boolean => {
+  const target = schemas[refName]
+  if (!target || !isSchemaObject(target) || isEnum(target)) return false
+  return !!(target.type === 'object' || target.oneOf || target.anyOf || target.allOf)
+}
+
+/**
  * 为单个字段生成取值表达式
  * @param accessPrefix 访问路径前缀（默认 "obj?."，嵌套时可传 "obj?.payload?."）
  *
@@ -131,11 +144,7 @@ const buildFieldExpr = (
 
   if (isRef(schema)) {
     const refName = getRefName(schema.$ref)
-    const target = schemas[refName]
-    if (target && isSchemaObject(target) && !isEnum(target)) {
-      const hasNestedFields = target.type === 'object' || target.oneOf || target.anyOf || target.allOf
-      if (hasNestedFields) return `${pickFnName(refName)}(${access})`
-    }
+    if (isPickableRef(refName, schemas)) return `${pickFnName(refName)}(${access})`
     return access
   }
 
@@ -144,10 +153,8 @@ const buildFieldExpr = (
   // array：若 item 是可深层 pick 的 $ref，生成 map 表达式
   if (schema.type === 'array' && schema.items && isRef(schema.items)) {
     const refName = getRefName(schema.items.$ref)
-    const target = schemas[refName]
-    if (target && isSchemaObject(target) && !isEnum(target)) {
-      const hasNestedFields = target.type === 'object' || target.oneOf || target.anyOf || target.allOf
-      if (hasNestedFields) return `${access}?.map((i: any) => ${pickFnName(refName)}(i))`
+    if (isPickableRef(refName, schemas)) {
+      return `${access}?.map((i: any) => ${pickFnName(refName)}(i))`
     }
   }
 
@@ -162,18 +169,17 @@ const buildInlineObjectExpr = (
   parentAccess: string,
   schema: OpenAPISchemaObject,
   schemas: OpenAPISchemas,
-  indent: number,
+  indentSize: number,
 ): string => {
   const properties = schema.properties ?? {}
   if (Object.keys(properties).length === 0) return parentAccess
 
-  const pad = ' '.repeat(indent)
-  const innerPad = ' '.repeat(indent + 2)
-  const lines: string[] = []
+  const pad = ' '.repeat(indentSize)
+  const innerPad = ' '.repeat(indentSize + 2)
 
-  for (const [key, prop] of Object.entries(properties)) {
-    lines.push(`${innerPad}${key}: ${buildFieldExpr(key, prop, schemas, `${parentAccess}?.`)}`)
-  }
+  const lines = Object.entries(properties).map(
+    ([key, prop]) => `${innerPad}${key}: ${buildFieldExpr(key, prop, schemas, `${parentAccess}?.`)}`,
+  )
 
   return `{\n${lines.join(',\n')}\n${pad}}`
 }
@@ -205,53 +211,52 @@ ${fieldLines.join(',\n')}
 }
 
 /**
- * 为 discriminated union 构建带 switch dispatch 的 definePick(...) 函数代码
- * 每个 case 对应一个变体，内联 object 字段按字段展开取值
+ * 为 discriminated union 构建带 if 链分发的 definePick(...) 函数代码
+ * 每个变体对应一个 if 分支，内联 object 字段按字段展开取值，第一个变体作为 fallback
  */
 const buildDiscriminatedUnionPickFn = (
   name: string,
   variants: OpenAPISchemaObject[],
   rawVariants: OpenAPISchema[],
   schemas: OpenAPISchemas,
-  opts?: PickOpts,
+  unionType = 'type',
 ): string => {
-  const { unionType = 'type' } = opts ?? {}
-  const cases = extractDiscriminatedVariants(variants, rawVariants).map(({ typeValue, schema: variant, refName }) => {
+  const discriminatedVariants = extractDiscriminatedVariants(variants, rawVariants, unionType)
+
+  const buildCaseReturn = ({ typeValue, schema: variant, refName }: (typeof discriminatedVariants)[number]): string => {
     // 若变体来自 allOf [$ref, ...] 则直接调用对应 pickXxx 函数
     if (refName) {
-      return `      case ${JSON.stringify(typeValue)}: return { ${unionType}: obj?.${unionType}, ...${pickFnName(refName)}(obj) }`
+      return `{ ${unionType}: ${JSON.stringify(typeValue)}, ...${pickFnName(refName)}(obj) }`
     }
 
     const otherFields = Object.entries(variant.properties ?? {})
-      .filter(([key]) => key !== 'type')
+      .filter(([key]) => key !== unionType)
       .map(([key, prop]) => {
-        // 内联 object：展开取值；其他：直接取值
-        const isInlineObject =
-          isSchemaObject(prop) && prop.type === 'object' && prop.properties && Object.keys(prop.properties).length > 0
-
-        const expr = isInlineObject
+        const expr = isInlineObject(prop)
           ? buildInlineObjectExpr(`obj?.${key}`, prop, schemas, 8)
           : buildFieldExpr(key, prop, schemas)
-
-        return `        ${key}: ${expr}`
+        return `      ${key}: ${expr}`
       })
 
     if (otherFields.length === 0) {
-      return `      case ${JSON.stringify(typeValue)}: return { ${unionType}: obj?.${unionType} }`
+      return `{ ${unionType}: ${JSON.stringify(typeValue)} }`
     }
-    return `      case ${JSON.stringify(typeValue)}: return {
-        type: obj?.${unionType},
+    return `{
+      ${unionType}: ${JSON.stringify(typeValue)},
 ${otherFields.join(',\n')}
-      }`
-  })
+    }`
+  }
+
+  const branches = buildIfChain(
+    discriminatedVariants,
+    (dv) => `obj?.${unionType} === ${JSON.stringify(dv.typeValue)}`,
+    buildCaseReturn,
+  )
 
   return `
 export const ${pickFnName(name)} = definePick<Types.${getTypeName(name)}>(
   (obj) => {
-    switch (obj?.${unionType}) {
-${cases.join('\n')}
-      default: return { type: obj?.${unionType} }
-    }
+${branches}
   },
   (obj) => ({}),
   defaults.${initFnName(name)}
@@ -284,9 +289,10 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
       const schemaVariants = resolveSchemaVariants(schema, schemas)
       if (schemaVariants.length === 0) continue
 
-      if (isDiscriminatedUnion(schemaVariants)) {
+      const detectedUnionType = isDiscriminatedUnion(schemaVariants, opts?.unionType)
+      if (detectedUnionType !== false) {
         // Discriminated union：switch dispatch
-        code += buildDiscriminatedUnionPickFn(name, schemaVariants, rawVariants, schemas, opts)
+        code += buildDiscriminatedUnionPickFn(name, schemaVariants, rawVariants, schemas, detectedUnionType)
       } else {
         // 普通联合类型：取第一个 object 变体生成
         const firstObj = schemaVariants.find((v) => v.type === 'object' && v.properties)
@@ -294,8 +300,6 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
       }
     }
 
-    const outPath = path.join(outputDir, 'pick.ts')
-    fs.mkdirSync(path.dirname(outPath), { recursive: true })
-    fs.writeFileSync(outPath, code)
+    writeGeneratedFile(outputDir, 'pick.ts', code)
   },
 }))

@@ -1,8 +1,6 @@
 /// <reference types="node" />
 
 import { createPlugin } from '@alova/wormhole/plugin'
-import fs from 'node:fs'
-import path from 'node:path'
 import type { OpenAPIV3 } from 'openapi-types'
 import {
   defaultFnName,
@@ -19,6 +17,7 @@ import {
   type OpenAPISchemaObject,
   type OpenAPISchemas,
 } from '../util/openapi'
+import { buildIfChain, writeGeneratedFile } from '../util/codegen'
 
 // ─── 插件配置 ─────────────────────────────────────────────────────────────────
 
@@ -80,7 +79,10 @@ const defineFull = <T>(
 const defineInit = <T>(
   fields: (obj?: Partial<T>) => T,
 ) => {
-  return <O extends Partial<T> & Record<string, any>>(obj?: O): T => ({ ...fields(obj), ...obj })
+  return <O extends Partial<T> & Record<string, any>>(obj?: O): T => {
+    if (!obj) return fields()
+    return defu(obj, fields(obj) as any) as T
+  }
 }
 `
 
@@ -154,18 +156,9 @@ const getNonNullExpr = (fieldName: string, schema: OpenAPISchemaObject, ctx: Fie
  * - 其他字段：直接返回固定值
  */
 const getPrimitiveDefaultExpr = (fieldName: string, schema: OpenAPISchemaObject, ctx: FieldGenContext): string => {
-  const { opts } = ctx
-  if (opts?.customDefaultExpr) {
-    const custom = opts.customDefaultExpr(fieldName, schema)
-    if (custom !== undefined) return custom
-  }
-  if (schema.default !== undefined) return JSON.stringify(schema.default)
-
   if (isNullable(schema)) {
-    const nonNullVal = getNonNullExpr(fieldName, schema, ctx)
-    return `notNull ? ${nonNullVal} : null`
+    return `notNull ? ${getNonNullExpr(fieldName, schema, ctx)} : null`
   }
-
   return getNonNullExpr(fieldName, schema, ctx)
 }
 
@@ -254,23 +247,23 @@ const buildFieldExpr = (
 const buildInlineObjectExpr = (
   schema: OpenAPISchemaObject,
   ctx: FieldGenContext,
-  indent: number,
+  indentSize: number,
   mode: FieldMode = 'full',
 ): string => {
   const properties = schema.properties ?? {}
   if (Object.keys(properties).length === 0) return '{}'
 
-  const pad = ' '.repeat(indent)
-  const innerPad = ' '.repeat(indent + 2)
-  const lines: string[] = []
+  const pad = ' '.repeat(indentSize - 2)
+  const innerPad = ' '.repeat(indentSize)
 
   // partial 模式只处理 required 字段
   const required = mode === 'partial' ? new Set<string>(schema.required ?? []) : null
 
+  const lines: string[] = []
   for (const [key, prop] of Object.entries(properties)) {
     if (required && !required.has(key)) continue
     const ctxWithPath = ctx.fieldPath ? { ...ctx, fieldPath: [...ctx.fieldPath, key] } : { ...ctx, fieldPath: [key] }
-    lines.push(`${innerPad}${key}: ${buildFieldExpr(key, prop, ctxWithPath, indent + 2, mode)}`)
+    lines.push(`${innerPad}${key}: ${buildFieldExpr(key, prop, ctxWithPath, indentSize, mode)}`)
   }
 
   if (lines.length === 0) return '{}'
@@ -280,45 +273,39 @@ const buildInlineObjectExpr = (
 // ─── 层 3：Generate 函数代码构建 ──────────────────────────────────────────────
 
 /**
- * 为一个 object schema 构建 defineFull(...) 函数代码
- * 生成**所有**字段（包括 optional），确保返回值中不含 undefined
- * - nullable 字段根据 notNull 参数决定是否为 null
- */
-/**
  * 为一个 object schema 构建 defineFull/init 函数代码
  *
- * 按 schema 正常生成字段默认值，返回 T：
- * - optional 字段（不在 required 数组中，允许 undefined）→ 不生成
- * - nullable 字段 → null
- * - required 非 nullable 字段 → 按类型生成默认值（$ref → 调用 fullXxx()，原始类型 → 字面量）
- *
- * 主要用于 pickXxx 补全缺失字段，以及作为表单初始值
+ * - full 模式：生成所有字段（包括 optional），nullable 字段根据 notNull 参数决定是否为 null
+ * - partial 模式：只生成 required 字段，optional 字段跳过，nullable 字段为 null
+ *   主要用于 pickXxx 补全缺失字段，以及作为表单初始值
  */
 const buildObjectFn = (name: string, schema: OpenAPISchemaObject, ctx: FieldGenContext, mode: FieldMode): string => {
   const required = mode === 'partial' ? new Set<string>(schema.required ?? []) : null
-  const fieldLines: string[] = []
 
-  for (const [fieldName, prop] of Object.entries(schema.properties ?? {})) {
-    // partial 模式跳过 optional 字段
-    if (required && !required.has(fieldName)) continue
-    fieldLines.push(`${fieldName}: ${buildFieldExpr(fieldName, prop, ctx, 4, mode)}`)
-  }
+  const fieldLines = Object.entries(schema.properties ?? {})
+    .filter(([fieldName]) => !required || required.has(fieldName))
+    .map(([fieldName, prop]) => {
+      const ctxWithPath = { ...ctx, fieldPath: [fieldName] }
+      return `    ${fieldName}: ${buildFieldExpr(fieldName, prop, ctxWithPath, 4, mode)}`
+    })
+
+  const typeName = `Types.${getTypeName(name)}`
+  const body = fieldLines.join(',\n')
 
   if (mode === 'full') {
     return `
-export const ${fullFnName(name)} = defineFull<Types.${getTypeName(name)}>(
+export const ${fullFnName(name)} = defineFull<${typeName}>(
   (notNull, obj) => ({
-${fieldLines.map((l) => `    ${l}`).join(',\n')}
+${body}
   })
 )
 `
   }
 
-  // partial 模式
   return `
-export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
+export const ${initFnName(name)} = defineInit<${typeName}>(
   (obj) => ({
-${fieldLines.map((l) => `    ${l}`).join(',\n')}
+${body}
   })
 )
 `
@@ -352,64 +339,49 @@ export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
 `
   }
 
-  // discriminated union：生成带 switch 的 init 函数
-  if (isDiscriminatedUnion(variants)) {
-    const { unionType = 'type' } = ctx.opts ?? {}
-    const rawVariants = schema.oneOf ?? schema.anyOf ?? schema.allOf ?? []
-    const discriminatedVariants = extractDiscriminatedVariants(variants, rawVariants)
+  // discriminated union：生成 if 链分发
+  const detectedUnionType = isDiscriminatedUnion(variants, ctx.opts?.unionType)
+  if (detectedUnionType !== false) {
+    const unionType = detectedUnionType
+    const discriminatedVariants = extractDiscriminatedVariants(variants, rawVariants, unionType)
+    if (!discriminatedVariants[0]) return ''
 
-    // 公共辅助：从变体 schema 中移除 unionType 字段
-    const removeUnionType = (variant: OpenAPISchemaObject): OpenAPISchemaObject => ({
+    // 从变体 schema 中移除 unionType 字段（避免重复输出）
+    const withoutUnionType = (variant: OpenAPISchemaObject): OpenAPISchemaObject => ({
       ...variant,
       required: variant.required?.filter((k) => k !== unionType) ?? [],
       properties: Object.fromEntries(Object.entries(variant.properties ?? {}).filter(([k]) => k !== unionType)),
     })
 
-    // 生成单个 case 的内层表达式：有 refName 则调用 ref 函数，否则内联展开
-    const buildCaseInnerExpr = (
+    // 生成单个变体的内层展开表达式
+    const buildVariantInnerExpr = (
       { schema: variant, refName }: (typeof discriminatedVariants)[number],
       mode: FieldMode,
     ): string => {
       if (refName) {
-        if (mode === 'partial') return `${initFnName(refName)}(obj)`
-        return `notNull ? ${fullFnName(refName)}({ notNull: true }) : ${fullFnName(refName)}()`
+        return mode === 'partial'
+          ? `${initFnName(refName)}(obj)`
+          : `notNull ? ${fullFnName(refName)}({ notNull: true }) : ${fullFnName(refName)}()`
       }
-      const variantWithoutUnionType = removeUnionType(variant)
-      return buildInlineObjectExpr(variantWithoutUnionType, { ...ctx, fieldPath: [] }, 6, mode)
+      return buildInlineObjectExpr(withoutUnionType(variant), { ...ctx, fieldPath: [] }, 6, mode)
     }
 
-    // 生成所有 case
-    const buildSwitchCases = (mode: FieldMode) =>
-      discriminatedVariants.map((dv) => {
-        const innerExpr = buildCaseInnerExpr(dv, mode)
-        return `      case ${JSON.stringify(dv.typeValue)}: return { ${unionType}: ${JSON.stringify(dv.typeValue)}, ...${innerExpr} }`
-      })
+    const buildVariantReturn = (dv: (typeof discriminatedVariants)[number], mode: FieldMode) =>
+      `{ ${unionType}: ${JSON.stringify(dv.typeValue)}, ...${buildVariantInnerExpr(dv, mode)} }`
 
-    const initCases = buildSwitchCases('partial')
-    const fullCases = buildSwitchCases('full')
-
-    // 第一个变体作为 default
-    const firstVariant = discriminatedVariants[0]
-    if (!firstVariant) return ''
-    const fullFirstReturn = `{ ${unionType}: ${JSON.stringify(firstVariant.typeValue)}, ...${buildCaseInnerExpr(firstVariant, 'full')} }`
-    const initFirstReturn = `{ ${unionType}: ${JSON.stringify(firstVariant.typeValue)}, ...${buildCaseInnerExpr(firstVariant, 'partial')} }`
+    const buildCond = (dv: (typeof discriminatedVariants)[number]) =>
+      `obj?.${unionType} === ${JSON.stringify(dv.typeValue)}`
 
     return `
 export const ${fullFnName(name)} = defineFull<Types.${getTypeName(name)}>(
   (notNull, obj) => {
-    switch (obj?.${unionType}) {
-${fullCases.join('\n')}
-      default: return ${fullFirstReturn}
-    }
+${buildIfChain(discriminatedVariants, buildCond, (dv) => buildVariantReturn(dv, 'full'))}
   }
 )
 
 export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
   (obj) => {
-    switch (obj?.${unionType}) {
-${initCases.join('\n')}
-      default: return ${initFirstReturn}
-    }
+${buildIfChain(discriminatedVariants, buildCond, (dv) => buildVariantReturn(dv, 'partial'))}
   }
 )
 `
@@ -485,8 +457,6 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
 
     code = runtimeHelperCode(checkRequriedImports(ctx)) + code
 
-    const outPath = path.join(outputDir, 'defaults.ts')
-    fs.mkdirSync(path.dirname(outPath), { recursive: true })
-    fs.writeFileSync(outPath, code)
+    writeGeneratedFile(outputDir, 'defaults.ts', code)
   },
 }))
