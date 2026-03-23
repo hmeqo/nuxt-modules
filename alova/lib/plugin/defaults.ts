@@ -61,19 +61,22 @@ export type DeepNotNull<T> = T extends object
   ? { [K in keyof T]-?: T[K] extends (infer U)[] ? DeepNotNull<U>[] : T[K] extends object ? DeepNotNull<T[K]> : NonNullable<T[K]> }
   : NonNullable<T>
 
+
+type DefineFullFn<T> = {
+  (): DeepRequired<T>
+  (obj: Partial<DeepRequired<T>>): DeepRequired<T>
+  (opts: { obj?: Partial<DeepNotNull<T>>; notNull: true }): DeepNotNull<T>
+  (opts: { obj?: Partial<DeepRequired<T>>; notNull?: false }): DeepRequired<T>
+}
+
 const defineFull = <T>(
   fields: (notNull: boolean, obj?: any) => DeepRequired<T>,
-) => {
-  function def(): DeepRequired<T>
-  function def(obj: Partial<DeepRequired<T>>): DeepRequired<T>
-  function def(opts: { obj?: Partial<DeepNotNull<T>>; notNull: true }): DeepNotNull<T>
-  function def(opts: { obj?: Partial<DeepRequired<T>>; notNull?: false }): DeepRequired<T>
-  function def(arg?: any): any {
+): DefineFullFn<T> => {
+  return (arg?: any): any => {
     const { notNull, obj } = arg?.notNull === undefined ? { notNull: false, obj: arg } : arg as { notNull: boolean; obj?: any }
     if (!obj) return fields(notNull)
     return defu(obj, fields(notNull, obj) as any)
   }
-  return def
 }
 
 const defineInit = <T>(
@@ -294,7 +297,7 @@ const buildObjectFn = (name: string, schema: OpenAPISchemaObject, ctx: FieldGenC
 
   if (mode === 'full') {
     return `
-export const ${fullFnName(name)} = defineFull<${typeName}>(
+export const ${fullFnName(name)}: DefineFullFn<${typeName}> = defineFull<${typeName}>(
   (notNull, obj) => ({
 ${body}
   })
@@ -325,7 +328,7 @@ const buildUnionDefaultFn = (name: string, schema: OpenAPISchemaObject, ctx: Fie
   if (isRef(firstRaw)) {
     const refName = getRefName(firstRaw.$ref)
     return `
-export const ${fullFnName(name)} = defineFull<Types.${getTypeName(name)}>(
+export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = defineFull<Types.${getTypeName(name)}>(
   (notNull, obj) => ({
     ...${fullFnName(refName)}({ notNull, ...obj })
   })
@@ -373,7 +376,7 @@ export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
       `obj?.${unionType} === ${JSON.stringify(dv.typeValue)}`
 
     return `
-export const ${fullFnName(name)} = defineFull<Types.${getTypeName(name)}>(
+export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = defineFull<Types.${getTypeName(name)}>(
   (notNull, obj) => {
 ${buildIfChain(discriminatedVariants, buildCond, (dv) => buildVariantReturn(dv, 'full'))}
   }

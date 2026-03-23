@@ -58,13 +58,16 @@ import * as defaults from './defaults'
 import type Types from './globals'
 import { deepFill } from '@workspace-hmeqo/util/lib'
 
+type DefinePickFn<T> = {
+  (obj: any): T
+  <O>(obj: any, fnOverride: (obj?: any) => O): O
+}
+
 const definePick = <T extends object>(
   pickFn: (obj: any) => Partial<T>,
   pkFn: (obj: any) => Partial<T>,
   fn: (obj?: any) => T,
 ) => {
-  function pick(obj: any): T
-  function pick<O extends object>(obj: any, fnOverride: (obj?: any) => O): O
   function pick<O extends object>(obj: any, fnOverride?: (obj?: any) => O): T | O {
     const picked: Partial<T> = obj != null ? pickFn(obj) : {}
 
@@ -122,6 +125,8 @@ const isInlineObject = (prop: OpenAPISchema): prop is OpenAPISchemaObject =>
 const isPickableRef = (refName: string, schemas: OpenAPISchemas): boolean => {
   const target = schemas[refName]
   if (!target || !isSchemaObject(target) || isEnum(target)) return false
+  // 纯字典类型（如 Record<string, any>，只有 additionalProperties 无 properties）无需递归 pick
+  if (target.type === 'object' && !target.properties) return false
   return !!(target.type === 'object' || target.oneOf || target.anyOf || target.allOf)
 }
 
@@ -199,8 +204,10 @@ const buildObjectPickFn = (
     ([key, prop]) => `    ${key}: ${buildFieldExpr(key, prop, schemas)}`,
   )
 
+  const typeName = `Types.${getTypeName(name)}`;
+
   return `
-export const ${pickFnName(name)} = definePick<Types.${getTypeName(name)}>(
+export const ${pickFnName(name)}: DefinePickFn<${typeName}> = definePick<${typeName}>(
   (obj) => ({
 ${fieldLines.join(',\n')}
   }),
