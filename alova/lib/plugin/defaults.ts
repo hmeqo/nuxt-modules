@@ -50,6 +50,7 @@ export interface DefaultsPluginOpts {
  *   主要用于 pickXxx 补全缺失字段，以及作为表单初始值
  */
 const runtimeHelperCode = (extraImports: string) => `/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/unified-signatures */
 import type Types from './globals'
 import { defu } from 'defu'
 ${extraImports}
@@ -214,9 +215,9 @@ const buildFieldExpr = (
     // full 模式
     if (ctx.fieldPath) {
       const objAccess = `(obj as any)?.${ctx.fieldPath.join('.')}`
-      return `notNull ? ${fullFnName(refName)}({ notNull: true, obj: ${objAccess} }) : ${fullFnName(refName)}({ obj: ${objAccess} })`
+      return `${fullFnName(refName)}({ notNull: notNull as any, obj: ${objAccess} })`
     }
-    return `notNull ? ${fullFnName(refName)}({ notNull: true }) : ${fullFnName(refName)}()`
+    return `${fullFnName(refName)}({ notNull: notNull as any })`
   }
 
   if (!isSchemaObject(schema)) return 'undefined'
@@ -364,7 +365,7 @@ export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
       if (refName) {
         return mode === 'partial'
           ? `${initFnName(refName)}(obj)`
-          : `notNull ? ${fullFnName(refName)}({ notNull: true }) : ${fullFnName(refName)}()`
+          : `${fullFnName(refName)}({ notNull: notNull as any })`
       }
       return buildInlineObjectExpr(withoutUnionType(variant), { ...ctx, fieldPath: [] }, 6, mode)
     }

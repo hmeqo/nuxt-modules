@@ -60,15 +60,15 @@ import { deepFill } from '@workspace-hmeqo/util/lib'
 
 type DefinePickFn<T> = {
   (obj: any): T
-  <O>(obj: any, fnOverride: (obj?: any) => O): O
+  <O extends object>(obj: any, fnOverride: (obj?: any) => O): O
 }
 
 const definePick = <T extends object>(
   pickFn: (obj: any) => Partial<T>,
   pkFn: (obj: any) => Partial<T>,
   fn: (obj?: any) => T,
-) => {
-  function pick<O extends object>(obj: any, fnOverride?: (obj?: any) => O): T | O {
+): DefinePickFn<T> => {
+  return <O extends object>(obj: any, fnOverride?: (obj?: any) => O): T | O => {
     const picked: Partial<T> = obj != null ? pickFn(obj) : {}
 
     if (obj != null) {
@@ -82,7 +82,6 @@ const definePick = <T extends object>(
 
     return picked as T | O;
   }
-  return pick
 }
 `
 
@@ -204,7 +203,7 @@ const buildObjectPickFn = (
     ([key, prop]) => `    ${key}: ${buildFieldExpr(key, prop, schemas)}`,
   )
 
-  const typeName = `Types.${getTypeName(name)}`;
+  const typeName = `Types.${getTypeName(name)}`
 
   return `
 export const ${pickFnName(name)}: DefinePickFn<${typeName}> = definePick<${typeName}>(
@@ -260,8 +259,10 @@ ${otherFields.join(',\n')}
     buildCaseReturn,
   )
 
+  const typeName = `Types.${getTypeName(name)}`
+
   return `
-export const ${pickFnName(name)} = definePick<Types.${getTypeName(name)}>(
+export const ${pickFnName(name)}: DefinePickFn<${typeName}> = definePick<${typeName}>(
   (obj) => {
 ${branches}
   },
