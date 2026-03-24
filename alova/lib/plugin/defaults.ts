@@ -62,7 +62,6 @@ export type DeepNotNull<T> = T extends object
   ? { [K in keyof T]-?: T[K] extends (infer U)[] ? DeepNotNull<U>[] : T[K] extends object ? DeepNotNull<T[K]> : NonNullable<T[K]> }
   : NonNullable<T>
 
-
 type DefineFullFn<T> = {
   (): DeepRequired<T>
   (obj: Partial<DeepRequired<T>>): DeepRequired<T>
@@ -71,7 +70,7 @@ type DefineFullFn<T> = {
 }
 
 const defineFull = <T>(
-  fields: (notNull: boolean, obj?: any) => DeepRequired<T>,
+  fields: (notNull: any, obj?: any) => DeepRequired<T>,
 ): DefineFullFn<T> => {
   return (arg?: any): any => {
     const { notNull, obj } = arg?.notNull === undefined ? { notNull: false, obj: arg } : arg as { notNull: boolean; obj?: any }
@@ -81,7 +80,7 @@ const defineFull = <T>(
 }
 
 const defineInit = <T>(
-  fields: (obj?: Partial<T>) => T,
+  fields: (obj?: any) => T,
 ) => {
   return <O extends Partial<T> & Record<string, any>>(obj?: O): T => {
     if (!obj) return fields()
@@ -206,7 +205,7 @@ const buildFieldExpr = (
     // partial 模式
     if (mode === 'partial') {
       if (ctx.fieldPath) {
-        const objAccess = `(obj as any)?.${ctx.fieldPath.join('.')}`
+        const objAccess = `obj?.${ctx.fieldPath.join('.')}`
         return `${initFnName(refName)}(${objAccess})`
       }
       return `${initFnName(refName)}()`
@@ -214,10 +213,10 @@ const buildFieldExpr = (
 
     // full 模式
     if (ctx.fieldPath) {
-      const objAccess = `(obj as any)?.${ctx.fieldPath.join('.')}`
-      return `${fullFnName(refName)}({ notNull: notNull as any, obj: ${objAccess} })`
+      const objAccess = `obj?.${ctx.fieldPath.join('.')}`
+      return `${fullFnName(refName)}({ notNull, obj: ${objAccess} })`
     }
-    return `${fullFnName(refName)}({ notNull: notNull as any })`
+    return `${fullFnName(refName)}({ notNull })`
   }
 
   if (!isSchemaObject(schema)) return 'undefined'
@@ -363,9 +362,7 @@ export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
       mode: FieldMode,
     ): string => {
       if (refName) {
-        return mode === 'partial'
-          ? `${initFnName(refName)}(obj)`
-          : `${fullFnName(refName)}({ notNull: notNull as any })`
+        return mode === 'partial' ? `${initFnName(refName)}(obj)` : `${fullFnName(refName)}({ notNull })`
       }
       return buildInlineObjectExpr(withoutUnionType(variant), { ...ctx, fieldPath: [] }, 6, mode)
     }
@@ -437,7 +434,8 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
       if (opts?.filter && !opts.filter(name, schema)) continue
 
       if (schema.enum?.length) {
-        code += `\nexport const ${defaultFnName(name)} = (): Types.${getTypeName(name)} => ${JSON.stringify(schema.enum[0])}\n`
+        const defaultValue = schema.default !== undefined ? schema.default : schema.enum[0]
+        code += `\nexport const ${defaultFnName(name)} = (): Types.${getTypeName(name)} => ${JSON.stringify(defaultValue)}\n`
         dataTypeNames.push(name)
       } else if (schema.type === 'number' || schema.type === 'integer') {
         code += `\nexport const ${defaultFnName(name)} = (): number => ${getNonNullExpr(name, schema, ctx)}\n`

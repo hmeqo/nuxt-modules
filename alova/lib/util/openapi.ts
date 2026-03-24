@@ -64,10 +64,7 @@ export interface DiscriminatedVariant {
  * @param preferredField 优先使用的字段名（如配置了 unionType），若满足条件直接采用
  * @returns 检测到的区分字段名，若不是 discriminated union 则返回 false
  */
-export const detectDiscriminatorField = (
-  variants: OpenAPISchemaObject[],
-  preferredField?: string,
-): string | false => {
+export const detectDiscriminatorField = (variants: OpenAPISchemaObject[], preferredField?: string): string | false => {
   if (variants.length === 0) return false
   if (!variants.every((v) => v.type === 'object')) return false
 
@@ -109,10 +106,8 @@ export const detectDiscriminatorField = (
  * @param preferredField 优先使用的字段名（如配置了 unionType）
  * @returns 区分字段名，若不是 discriminated union 则返回 false
  */
-export const isDiscriminatedUnion = (
-  variants: OpenAPISchemaObject[],
-  preferredField?: string,
-): string | false => detectDiscriminatorField(variants, preferredField)
+export const isDiscriminatedUnion = (variants: OpenAPISchemaObject[], preferredField?: string): string | false =>
+  detectDiscriminatorField(variants, preferredField)
 
 /**
  * 从已验证的 discriminated union 变体中提取 type 值、schema 和可选的 refName。
@@ -131,7 +126,10 @@ export const extractDiscriminatedVariants = (
     // 检查原始变体是否为 allOf [$ref, ...] 结构，提取 $ref 名称
     const refName =
       raw && isSchemaObject(raw) && raw.allOf
-        ? raw.allOf.reduce<string | undefined>((found, part) => found ?? (isRef(part) ? getRefName(part.$ref) : undefined), undefined)
+        ? raw.allOf.reduce<string | undefined>(
+            (found, part) => found ?? (isRef(part) ? getRefName(part.$ref) : undefined),
+            undefined,
+          )
         : undefined
     return {
       typeValue: String(typeField.enum![0]),
