@@ -69,6 +69,10 @@ type DefineFullFn<T> = {
   (opts: { obj?: Partial<DeepRequired<T>>; notNull?: false }): DeepRequired<T>
 }
 
+type DefineInitFn<T> = {
+  <O extends Partial<T> & Record<string, any>>(obj?: O): T
+}
+
 const defineFull = <T>(
   fields: (notNull: any, obj?: any) => DeepRequired<T>,
 ): DefineFullFn<T> => {
@@ -81,7 +85,7 @@ const defineFull = <T>(
 
 const defineInit = <T>(
   fields: (obj?: any) => T,
-) => {
+): DefineInitFn<T> => {
   return <O extends Partial<T> & Record<string, any>>(obj?: O): T => {
     if (!obj) return fields()
     return defu(obj, fields(obj) as any) as T
@@ -306,7 +310,7 @@ ${body}
   }
 
   return `
-export const ${initFnName(name)} = defineInit<${typeName}>(
+export const ${initFnName(name)}: DefineInitFn<${typeName}> = defineInit<${typeName}>(
   (obj) => ({
 ${body}
   })
@@ -334,7 +338,7 @@ export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = def
   })
 )
 
-export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
+export const ${initFnName(name)}: DefineInitFn<Types.${getTypeName(name)}> = defineInit<Types.${getTypeName(name)}>(
   (obj) => ({
     ...${initFnName(refName)}(obj)
   })
@@ -380,7 +384,7 @@ ${buildIfChain(discriminatedVariants, buildCond, (dv) => buildVariantReturn(dv, 
   }
 )
 
-export const ${initFnName(name)} = defineInit<Types.${getTypeName(name)}>(
+export const ${initFnName(name)}: DefineInitFn<Types.${getTypeName(name)}> = defineInit<Types.${getTypeName(name)}>(
   (obj) => {
 ${buildIfChain(discriminatedVariants, buildCond, (dv) => buildVariantReturn(dv, 'partial'))}
   }
