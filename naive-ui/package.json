@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "dependencies": {
     "@bg-dev/nuxt-naiveui": "2.0.0",
-    "naive-ui": "^2.43.2"
+    "naive-ui": "^2.44.1"
   }
 }
