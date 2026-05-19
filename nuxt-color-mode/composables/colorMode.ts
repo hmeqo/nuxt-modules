@@ -5,16 +5,17 @@ type ColorModePreference = ColorMode | 'system'
 const useNuxtColorMode = defineCachedFn(useColorMode)
 
 export const useThemeMode = defineCachedFn(() => {
+  const nuxtColorMode = useNuxtColorMode()
+
   const colorModePreference = computed({
-    get: () => useNuxtColorMode().preference as ColorModePreference,
+    get: () => nuxtColorMode.preference as ColorModePreference,
     set: (v) => {
-      const nuxtColorMode = useNuxtColorMode()
       nuxtColorMode.preference = v
     },
   })
 
   const colorMode = computed({
-    get: () => useNuxtColorMode().value as ColorMode,
+    get: () => nuxtColorMode.value as ColorMode,
     set: (v) => {
       colorModePreference.value = v
     },
