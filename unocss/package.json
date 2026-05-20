@@ -1,5 +1,5 @@
 {
-  "name": "@workspace-hmeqo/unocss",
+  "name": "@ws-hmeqo/unocss",
   "version": "0.1.0",
   "dependencies": {
     "@unocss/nuxt": "66.6.0",

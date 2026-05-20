@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@workspace-hmeqo/nuxt-color-mode', '@workspace-hmeqo/unocss', '@workspace-hmeqo/shadcn-unocss'],
+  modules: ['@ws-hmeqo/nuxt-color-mode', '@ws-hmeqo/unocss', '@ws-hmeqo/shadcn-unocss'],
   colorMode: {
     preference: 'dark',
   },

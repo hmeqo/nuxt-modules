@@ -1,5 +1,5 @@
 {
-  "name": "@workspace-hmeqo/konva",
+  "name": "@ws-hmeqo/konva",
   "version": "0.1.0",
   "dependencies": {
     "konva": "^10.2.5",

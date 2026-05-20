@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@workspace-hmeqo/i18n'],
+  modules: ['@ws-hmeqo/i18n'],
   i18n: {
     locales: [
       {

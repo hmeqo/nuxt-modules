@@ -2,13 +2,13 @@ import { addComponentsDir, addImportsDir, createResolver, defineNuxtModule } fro
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/konva',
+    name: '@ws-hmeqo/konva',
   },
 
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@workspace-hmeqo/konva/types',
+        types: '@ws-hmeqo/konva/types',
       })
     },
   },

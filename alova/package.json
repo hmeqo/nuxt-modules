@@ -1,9 +1,9 @@
 {
-  "name": "@workspace-hmeqo/alova",
+  "name": "@ws-hmeqo/alova",
   "version": "0.1.0",
   "dependencies": {
     "@alova/wormhole": "^1.5.0",
-    "@workspace-hmeqo/util": "workspace:^",
+    "@ws-hmeqo/util": "workspace:^",
     "alova": "^3.5.1",
     "openapi-types": "^12.1.3",
     "uuid": "^13.0.0"

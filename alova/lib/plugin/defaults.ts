@@ -403,7 +403,7 @@ const checkRequriedImports = (ctx: FieldGenContext) => {
   let code = ''
   const { requiredUtils, requiredImports } = ctx
   if (requiredUtils.size) {
-    code += `import { ${Array.from(requiredUtils).join(', ')} } from '@workspace-hmeqo/util/lib/date'
+    code += `import { ${Array.from(requiredUtils).join(', ')} } from '@ws-hmeqo/util/lib/date'
 `
   }
   if (requiredImports.has('uuidv4')) {

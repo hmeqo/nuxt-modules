@@ -1,5 +1,5 @@
 {
-  "name": "@workspace-hmeqo/pwa",
+  "name": "@ws-hmeqo/pwa",
   "version": "0.1.0",
   "dependencies": {
     "@vite-pwa/nuxt": "^1.1.1"

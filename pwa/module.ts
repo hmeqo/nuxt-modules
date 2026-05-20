@@ -3,7 +3,7 @@ import type { ModuleOptions as PwaModuleOptions } from '@vite-pwa/nuxt'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/pwa',
+    name: '@ws-hmeqo/pwa',
   },
 
   moduleDependencies: {

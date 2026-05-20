@@ -1,5 +1,5 @@
 {
-  "name": "@workspace-hmeqo/varlet",
+  "name": "@ws-hmeqo/varlet",
   "version": "0.1.0",
   "dependencies": {
     "@varlet/nuxt": "^0.1.5",

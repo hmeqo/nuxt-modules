@@ -4,7 +4,7 @@ import type { ModuleOptions } from './types'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@workspace-hmeqo/nuxt-web-kit',
+    name: '@ws-hmeqo/nuxt-web-kit',
     configKey: 'hmeqoNuxtWebKit',
   },
 

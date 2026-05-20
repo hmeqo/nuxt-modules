@@ -56,7 +56,7 @@ export type PickOpts = {
 const RUNTIME_HELPER_CODE = `/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as defaults from './defaults'
 import type Types from './globals'
-import { deepFill } from '@workspace-hmeqo/util/lib'
+import { deepFill } from '@ws-hmeqo/util/lib'
 
 type DefinePickFn<T> = {
   (obj: any): T

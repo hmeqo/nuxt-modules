@@ -2,7 +2,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/unocss',
+    name: '@ws-hmeqo/unocss',
   },
 
   moduleDependencies: {

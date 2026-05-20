@@ -2,7 +2,7 @@ import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/pinia',
+    name: '@ws-hmeqo/pinia',
   },
 
   moduleDependencies: {

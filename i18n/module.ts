@@ -4,7 +4,7 @@ import { defu } from 'defu'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/i18n',
+    name: '@ws-hmeqo/i18n',
   },
 
   moduleDependencies: {

@@ -1,16 +1,17 @@
+import type { ModuleOptions as NuxtIconOptions } from '@nuxt/icon'
 import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
 import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/nuxt-infra',
+    name: '@ws-hmeqo/nuxt-infra',
   },
 
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@workspace-hmeqo/nuxt-infra/types',
+        types: '@ws-hmeqo/nuxt-infra/types',
       })
     },
   },
@@ -20,7 +21,18 @@ export default defineNuxtModule({
     '@nuxt/eslint': {},
     '@nuxt/test-utils': {},
     '@nuxtjs/seo': {},
+    'nuxt-og-image': {
+      defaults: <Partial<NuxtOgImageOptions>>{
+        enabled: false,
+      },
+    },
     '@nuxtjs/device': {},
+    '@nuxt/icon': {
+      defaults: <Partial<NuxtIconOptions>>{
+        mode: 'svg',
+      },
+    },
+    '@vueuse/nuxt': {},
     'dayjs-nuxt': {
       defaults: <Partial<DayjsOptions>>{
         locales: ['en', 'zh-cn'],
@@ -29,15 +41,9 @@ export default defineNuxtModule({
         defaultTimezone: 'Asia/Shanghai',
       },
     },
-    'nuxt-og-image': {
-      defaults: <Partial<NuxtOgImageOptions>>{
-        enabled: false,
-      },
-    },
-    '@vueuse/nuxt': {},
-    '@workspace-hmeqo/util': {},
-    '@workspace-hmeqo/nuxt-web-kit': {},
-    '@workspace-hmeqo/nuxt-color-mode': {},
+    '@ws-hmeqo/util': {},
+    '@ws-hmeqo/nuxt-web-kit': {},
+    '@ws-hmeqo/nuxt-color-mode': {},
   },
 
   async setup(options, nuxt) {

@@ -2,7 +2,7 @@ import { defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@workspace-hmeqo/shadcn-unocss',
+    name: '@ws-hmeqo/shadcn-unocss',
   },
 
   moduleDependencies: {
