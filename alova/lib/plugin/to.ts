@@ -30,7 +30,7 @@ export type PkRule = {
   excludes?: string[]
 }
 
-export type PickOpts = {
+export type ToOpts = {
   /** 过滤不需要生成的 schema */
   filter?: (name: string) => boolean
   /** PK 映射规则 */
@@ -44,50 +44,50 @@ export type PickOpts = {
 // ─── 运行时帮助代码（注入到生成文件头部）────────────────────────────────────
 
 //
-// 定义一个 pick 函数，用于从 resp 对象提取字段，输出完整的 req/model 对象。
+// 定义一个 to 函数，用于从 resp 对象提取字段，输出完整的 req/model 对象。
 //
 // 用途：将后端响应（resp）类型安全地转换为请求（req）或模型类型。
-// - pickFn：从 obj 中提取所有字段（支持嵌套递归 pick）
+// - toFn：从 obj 中提取所有字段（支持嵌套递归 to）
 // - pkFn：PK 映射（如从关联对象中提取 id：{ device_id: obj?.device?.id }）
 // - fn：initXxx，用于补全 obj 中缺失的字段（只补全有 schema 默认值的字段）
 //
-// 返回类型始终为 T（完整类型），因为 pick 一般从完整 resp 对象中提取。
+// 返回类型始终为 T（完整类型），因为 to 一般从完整 resp 对象中提取。
 //
 const RUNTIME_HELPER_CODE = `/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as defaults from './defaults'
 import type Types from './globals'
 import { deepFill } from '@ws-hmeqo/util/lib'
 
-type DefinePickFn<T> = {
+type DefineToFn<T> = {
   (obj: any): T
   <O extends object>(obj: any, fnOverride: (obj?: any) => O): O
 }
 
-const definePick = <T extends object>(
-  pickFn: (obj: any) => Partial<T>,
+const defineTo = <T extends object>(
+  toFn: (obj: any) => Partial<T>,
   pkFn: (obj: any) => Partial<T>,
   fn: (obj?: any) => T,
-): DefinePickFn<T> => {
+): DefineToFn<T> => {
   return <O extends object>(obj: any, fnOverride?: (obj?: any) => O): T | O => {
-    const picked: Partial<T> = obj != null ? pickFn(obj) : {}
+    const result: Partial<T> = obj != null ? toFn(obj) : {}
 
     if (obj != null) {
       for (const [k, v] of Object.entries(pkFn(obj))) {
-        if (v !== undefined) picked[k as keyof T] = v as T[keyof T]
+        if (v !== undefined) result[k as keyof T] = v as T[keyof T]
       }
     }
 
-    const source = (fnOverride ?? fn)(picked);
-    deepFill(picked, source);
+    const source = (fnOverride ?? fn)(result);
+    deepFill(result, source);
 
-    return picked as T | O;
+    return result as T | O;
   }
 }
 `
 
 // ─── 层 1：PK 表达式生成 ──────────────────────────────────────────────────────
 
-const pickFnName = (schemaName: string) => `pick${getTypeName(schemaName)}`
+const toFnName = (schemaName: string) => `$to${getTypeName(schemaName)}`
 
 /**
  * 根据 PK 规则为 schema 的字段生成 pk 映射表达式
@@ -119,12 +119,12 @@ const isInlineObject = (prop: OpenAPISchema): prop is OpenAPISchemaObject =>
   isSchemaObject(prop) && prop.type === 'object' && !!prop.properties && Object.keys(prop.properties).length > 0
 
 /**
- * 判断一个 $ref 指向的 schema 是否需要递归 pick（object/union 类型且非 enum）
+ * 判断一个 $ref 指向的 schema 是否需要递归 to（object/union 类型且非 enum）
  */
-const isPickableRef = (refName: string, schemas: OpenAPISchemas): boolean => {
+const isToableRef = (refName: string, schemas: OpenAPISchemas): boolean => {
   const target = schemas[refName]
   if (!target || !isSchemaObject(target) || isEnum(target)) return false
-  // 纯字典类型（如 Record<string, any>，只有 additionalProperties 无 properties）无需递归 pick
+  // 纯字典类型（如 Record<string, any>，只有 additionalProperties 无 properties）无需递归 to
   if (target.type === 'object' && !target.properties) return false
   return !!(target.type === 'object' || target.oneOf || target.anyOf || target.allOf)
 }
@@ -134,8 +134,8 @@ const isPickableRef = (refName: string, schemas: OpenAPISchemas): boolean => {
  * @param accessPrefix 访问路径前缀（默认 "obj?."，嵌套时可传 "obj?.payload?."）
  *
  * 规则：
- * - $ref → 若目标是 object/union 则递归 pickFn，否则直接取值
- * - array with object $ref items → map + pickFn
+ * - $ref → 若目标是 object/union 则递归 toFn，否则直接取值
+ * - array with object $ref items → map + toFn
  * - 其他 → 直接取值
  */
 const buildFieldExpr = (
@@ -148,17 +148,17 @@ const buildFieldExpr = (
 
   if (isRef(schema)) {
     const refName = getRefName(schema.$ref)
-    if (isPickableRef(refName, schemas)) return `${pickFnName(refName)}(${access})`
+    if (isToableRef(refName, schemas)) return `${toFnName(refName)}(${access})`
     return access
   }
 
   if (!isSchemaObject(schema) || isEnum(schema)) return access
 
-  // array：若 item 是可深层 pick 的 $ref，生成 map 表达式
+  // array：若 item 是可深层 to 的 $ref，生成 map 表达式
   if (schema.type === 'array' && schema.items && isRef(schema.items)) {
     const refName = getRefName(schema.items.$ref)
-    if (isPickableRef(refName, schemas)) {
-      return `${access}?.map((i: any) => ${pickFnName(refName)}(i))`
+    if (isToableRef(refName, schemas)) {
+      return `${access}?.map((i: any) => ${toFnName(refName)}(i))`
     }
   }
 
@@ -188,12 +188,12 @@ const buildInlineObjectExpr = (
   return `{\n${lines.join(',\n')}\n${pad}}`
 }
 
-// ─── 层 3：Pick 函数代码构建 ──────────────────────────────────────────────────
+// ─── 层 3：to 函数代码构建 ────────────────────────────────────────────────────
 
 /**
- * 为普通 object schema 构建 definePick(...) 函数代码
+ * 为普通 object schema 构建 defineTo(...) 函数代码
  */
-const buildObjectPickFn = (
+const buildObjectToFn = (
   name: string,
   schema: OpenAPISchemaObject,
   schemas: OpenAPISchemas,
@@ -206,7 +206,7 @@ const buildObjectPickFn = (
   const typeName = `Types.${getTypeName(name)}`
 
   return `
-export const ${pickFnName(name)}: DefinePickFn<${typeName}> = definePick<${typeName}>(
+export const ${toFnName(name)}: DefineToFn<${typeName}> = defineTo<${typeName}>(
   (obj) => ({
 ${fieldLines.join(',\n')}
   }),
@@ -217,10 +217,10 @@ ${fieldLines.join(',\n')}
 }
 
 /**
- * 为 discriminated union 构建带 if 链分发的 definePick(...) 函数代码
+ * 为 discriminated union 构建带 if 链分发的 defineTo(...) 函数代码
  * 每个变体对应一个 if 分支，内联 object 字段按字段展开取值，第一个变体作为 fallback
  */
-const buildDiscriminatedUnionPickFn = (
+const buildDiscriminatedUnionToFn = (
   name: string,
   variants: OpenAPISchemaObject[],
   rawVariants: OpenAPISchema[],
@@ -230,9 +230,9 @@ const buildDiscriminatedUnionPickFn = (
   const discriminatedVariants = extractDiscriminatedVariants(variants, rawVariants, unionType)
 
   const buildCaseReturn = ({ typeValue, schema: variant, refName }: (typeof discriminatedVariants)[number]): string => {
-    // 若变体来自 allOf [$ref, ...] 则直接调用对应 pickXxx 函数
+    // 若变体来自 allOf [$ref, ...] 则直接调用对应 toXxx 函数
     if (refName) {
-      return `{ ${unionType}: ${JSON.stringify(typeValue)}, ...${pickFnName(refName)}(obj) }`
+      return `{ ${unionType}: ${JSON.stringify(typeValue)}, ...${toFnName(refName)}(obj) }`
     }
 
     const otherFields = Object.entries(variant.properties ?? {})
@@ -262,7 +262,7 @@ ${otherFields.join(',\n')}
   const typeName = `Types.${getTypeName(name)}`
 
   return `
-export const ${pickFnName(name)}: DefinePickFn<${typeName}> = definePick<${typeName}>(
+export const ${toFnName(name)}: DefineToFn<${typeName}> = defineTo<${typeName}>(
   (obj) => {
 ${branches}
   },
@@ -274,7 +274,7 @@ ${branches}
 
 // ─── 插件入口 ─────────────────────────────────────────────────────────────────
 
-export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => ({
+export const toPlugin = createPlugin((outputDir: string, opts?: ToOpts) => ({
   afterOpenapiParse(document) {
     const schemas: OpenAPISchemas = document.components?.schemas ?? {}
     if (Object.keys(schemas).length === 0) return
@@ -288,7 +288,7 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
 
       // 普通 object 类型
       if (schema.type === 'object' && schema.properties) {
-        code += buildObjectPickFn(name, schema, schemas, pkRules)
+        code += buildObjectToFn(name, schema, schemas, pkRules)
         continue
       }
 
@@ -300,14 +300,14 @@ export const pickPlugin = createPlugin((outputDir: string, opts?: PickOpts) => (
       const detectedUnionType = isDiscriminatedUnion(schemaVariants, opts?.unionType)
       if (detectedUnionType !== false) {
         // Discriminated union：switch dispatch
-        code += buildDiscriminatedUnionPickFn(name, schemaVariants, rawVariants, schemas, detectedUnionType)
+        code += buildDiscriminatedUnionToFn(name, schemaVariants, rawVariants, schemas, detectedUnionType)
       } else {
         // 普通联合类型：取第一个 object 变体生成
         const firstObj = schemaVariants.find((v) => v.type === 'object' && v.properties)
-        if (firstObj) code += buildObjectPickFn(name, firstObj, schemas, pkRules)
+        if (firstObj) code += buildObjectToFn(name, firstObj, schemas, pkRules)
       }
     }
 
-    writeGeneratedFile(outputDir, 'pick.ts', code)
+    writeGeneratedFile(outputDir, 'to.ts', code)
   },
 }))

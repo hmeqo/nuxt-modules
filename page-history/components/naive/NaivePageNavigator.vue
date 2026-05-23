@@ -20,11 +20,11 @@ const { enabled, paths, removePath } = usePageHistory()
         >
           <NLayoutContent class="px-4 py-2" content-class="flex items-center *:shrink-0">
             <div v-if="i.icon" class="nav-item-icon">
-              <div class="nav-item-icon-inner" :class="i.icon" />
+              <Icon :name="i.icon.replace(/^i-/, '')" class="w-full h-full" />
             </div>
             <div>{{ i.title }}</div>
             <div v-if="paths.length > 1" class="nav-item-close" @click.stop.prevent="removePath(i)">
-              <div class="nav-item-close-inner i-material-symbols:close" />
+              <Icon name="material-symbols:close" class="w-full h-full" />
             </div>
           </NLayoutContent>
         </NuxtLink>
@@ -70,15 +70,7 @@ const { enabled, paths, removePath } = usePageHistory()
   --uno: 'h-6 aspect-square mr-1';
 }
 
-.nav-item-icon-inner {
-  --uno: 'w-full h-full';
-}
-
 .nav-item-close {
   --uno: 'h-5 aspect-square ml-2 p-0.5 rounded-1 hover:bg-[#7f7f7f3f]';
-}
-
-.nav-item-close-inner {
-  --uno: 'w-full h-full bg-truegray-600';
 }
 </style>

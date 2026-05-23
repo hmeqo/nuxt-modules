@@ -30,6 +30,7 @@ export default defineNuxtModule({
     '@nuxt/icon': {
       defaults: <Partial<NuxtIconOptions>>{
         mode: 'svg',
+        provider: 'server',
       },
     },
     '@vueuse/nuxt': {},

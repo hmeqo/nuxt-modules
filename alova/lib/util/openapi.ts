@@ -30,8 +30,8 @@ export const getTypeName = (name: string) => {
     .join('_')
 }
 
-export const fullFnName = (schemaName: string) => `full${getTypeName(schemaName)}`
-export const initFnName = (schemaName: string) => `init${getTypeName(schemaName)}`
+export const fullFnName = (schemaName: string) => `$full${getTypeName(schemaName)}`
+export const initFnName = (schemaName: string) => `$init${getTypeName(schemaName)}`
 export const defaultFnName = (schemaName: string) => `default${getTypeName(schemaName)}`
 
 /** Convert object to compact string, e.g. { min: 1, max: 10 } */

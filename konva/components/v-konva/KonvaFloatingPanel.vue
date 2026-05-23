@@ -103,7 +103,7 @@ const { startDrag } = (() => {
           <slot name="icon" />
           <span>{{ title }}</span>
         </div>
-        <div class="i-lucide:grip-horizontal text-muted-foreground/60 text-xs" />
+        <Icon name="lucide:grip-horizontal" class="text-muted-foreground/60 text-xs" />
       </div>
 
       <slot />

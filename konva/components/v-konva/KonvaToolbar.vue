@@ -16,7 +16,7 @@ const props = defineProps<{
           class="flex items-center justify-center h-full cursor-grab active:cursor-grabbing text-muted-foreground active:text-foreground transition-colors"
           @mousedown="startDrag"
         >
-          <div class="i-lucide-grip-vertical size-4" />
+          <Icon name="lucide:grip-vertical" class="size-4" />
         </div>
         <!-- 2. 动态渲染工具项 -->
         <template v-for="(item, index) in items" :key="item.id || index">
@@ -45,7 +45,7 @@ const props = defineProps<{
             @click="item.onClick"
           >
             <!-- 图标 -->
-            <div :class="[item.icon, 'text-sm']" />
+            <Icon :name="item.icon.replace(/^i-/, '')" class="text-sm" />
 
             <!-- 角标 (可选) -->
             <span

@@ -47,7 +47,7 @@ export interface DefaultsPluginOpts {
  *   - optional 字段（允许 undefined）→ 不生成
  *   - nullable 字段 → null
  *   - required 非 nullable 字段 → 按类型生成默认值
- *   主要用于 pickXxx 补全缺失字段，以及作为表单初始值
+ *   主要用于 toXxx 补全缺失字段，以及作为表单初始值
  */
 const runtimeHelperCode = (extraImports: string) => `/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/unified-signatures */
@@ -284,7 +284,7 @@ const buildInlineObjectExpr = (
  *
  * - full 模式：生成所有字段（包括 optional），nullable 字段根据 notNull 参数决定是否为 null
  * - partial 模式：只生成 required 字段，optional 字段跳过，nullable 字段为 null
- *   主要用于 pickXxx 补全缺失字段，以及作为表单初始值
+ *   主要用于 toXxx 补全缺失字段，以及作为表单初始值
  */
 const buildObjectFn = (name: string, schema: OpenAPISchemaObject, ctx: FieldGenContext, mode: FieldMode): string => {
   const required = mode === 'partial' ? new Set<string>(schema.required ?? []) : null

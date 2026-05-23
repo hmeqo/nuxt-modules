@@ -1,7 +1,7 @@
 /// <reference types="node" />
 
 /**
- * 代码生成工具函数（供 defaults/pick 插件共用）
+ * 代码生成工具函数（供 defaults/to 插件共用）
  */
 
 import fs from 'node:fs'
