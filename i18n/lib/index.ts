@@ -1,4 +1,5 @@
 /**
+ * @description Fill in missing i18n locale records based on a reference record.
  * @example
  * fillI18nLocaleRecords({ 'hello': 'Hello' }, { 'hello': '你好', 'welcome': '欢迎' })
  * => { 'hello': 'Hello', 'welcome': 'Welcome' }

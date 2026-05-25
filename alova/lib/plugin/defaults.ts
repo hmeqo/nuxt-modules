@@ -326,11 +326,56 @@ const buildUnionDefaultFn = (name: string, schema: OpenAPISchemaObject, ctx: Fie
   const variants = resolveSchemaVariants(schema, ctx.schemas)
   if (variants.length === 0) return ''
 
-  // Ref 类型变体：直接转发
+  // Ref 类型变体：直接转发（allOf 含多个成员时合并展开）
   const rawVariants = schema.oneOf ?? schema.anyOf ?? schema.allOf ?? []
   const firstRaw = rawVariants[0]
   if (isRef(firstRaw)) {
     const refName = getRefName(firstRaw.$ref)
+    const remaining = rawVariants.slice(1)
+
+    // allOf 有多个成员时，合并 $ref 与剩余成员的字段
+    if (schema.allOf && remaining.length > 0) {
+      const typeName = `Types.${getTypeName(name)}`
+      const fullLines: string[] = []
+      const partialLines: string[] = []
+
+      for (const item of remaining) {
+        if (isRef(item)) {
+          const rn = getRefName(item.$ref)
+          fullLines.push(`    ...${fullFnName(rn)}({ notNull })`)
+          partialLines.push(`    ...${initFnName(rn)}(obj)`)
+          continue
+        }
+        if (!isSchemaObject(item) || !item.properties) continue
+
+        const required = new Set(item.required ?? [])
+        for (const [key, prop] of Object.entries(item.properties)) {
+          const ctxPath = { ...ctx, fieldPath: [key] }
+          fullLines.push(`    ${key}: ${buildFieldExpr(key, prop, ctxPath, 4, 'full')}`)
+          if (required.has(key)) {
+            partialLines.push(`    ${key}: ${buildFieldExpr(key, prop, ctxPath, 4, 'partial')}`)
+          }
+        }
+      }
+
+      const fullBody = [`    ...${fullFnName(refName)}({ notNull, ...obj })`, ...fullLines].join(',\n')
+      const partialBody = [`    ...${initFnName(refName)}(obj)`, ...partialLines].join(',\n')
+
+      return `
+export const ${fullFnName(name)}: DefineFullFn<${typeName}> = defineFull<${typeName}>(
+  (notNull, obj) => ({
+${fullBody}
+  })
+)
+
+export const ${initFnName(name)}: DefineInitFn<${typeName}> = defineInit<${typeName}>(
+  (obj) => ({
+${partialBody}
+  })
+)
+`
+    }
+
     return `
 export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = defineFull<Types.${getTypeName(name)}>(
   (notNull, obj) => ({
