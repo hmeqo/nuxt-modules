@@ -60,5 +60,14 @@ export default defineNuxtModule({
     addPlugin(resolver.resolve('./plugins/error.ts'))
 
     addImportsDir([resolver.resolve('./composables'), resolver.resolve('./utils'), resolver.resolve('./stores')])
+
+    // Auth middleware
+    nuxt.hook('app:resolve', (app) => {
+      app.middleware.push({
+        name: 'auth',
+        path: resolver.resolve('./middleware/auth.ts'),
+        global: true,
+      })
+    })
   },
 })

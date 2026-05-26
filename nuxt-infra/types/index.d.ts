@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'vue'
+import type { AuthMeta, AuthStrategy } from './auth'
 
 export {}
 
@@ -13,5 +14,6 @@ declare module 'nuxt/app' {
     title?: string
     tags?: string[]
     icon?: string
+    auth?: AuthStrategy | AuthMeta
   }
 }
