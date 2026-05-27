@@ -1,5 +1,12 @@
 import type { ModuleOptions as NuxtIconOptions } from '@nuxt/icon'
-import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
+import {
+  addComponentsDir,
+  addImportsDir,
+  addPlugin,
+  addRouteMiddleware,
+  createResolver,
+  defineNuxtModule,
+} from '@nuxt/kit'
 import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
 import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
 
@@ -37,7 +44,7 @@ export default defineNuxtModule({
     'dayjs-nuxt': {
       defaults: <Partial<DayjsOptions>>{
         locales: ['en', 'zh-cn'],
-        plugins: ['relativeTime', 'utc', 'timezone', 'quarterOfYear'],
+        plugins: ['relativeTime', 'utc', 'timezone', 'quarterOfYear', 'localizedFormat'],
         defaultLocale: 'zh-cn',
         defaultTimezone: 'Asia/Shanghai',
       },
@@ -61,13 +68,10 @@ export default defineNuxtModule({
 
     addImportsDir([resolver.resolve('./composables'), resolver.resolve('./utils'), resolver.resolve('./stores')])
 
-    // Auth middleware
-    nuxt.hook('app:resolve', (app) => {
-      app.middleware.push({
-        name: 'auth',
-        path: resolver.resolve('./middleware/auth.ts'),
-        global: true,
-      })
+    addRouteMiddleware({
+      name: 'auth',
+      path: resolver.resolve('./middleware/auth.ts'),
+      global: true,
     })
   },
 })

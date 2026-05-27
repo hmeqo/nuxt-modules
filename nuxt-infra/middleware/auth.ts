@@ -8,6 +8,8 @@ function normalizeShorthand(raw: AuthStrategy): AuthMeta | null {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  if (import.meta.prerender) return
+
   const raw = to.meta.auth
   if (!raw) return
 
@@ -17,8 +19,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const adapter = useAuthAdapter()
   const isAuthed = adapter.isAuthenticated()
 
-  const authInit = useState('auth:init', () => false)
-  if (!authInit.value) {
+  const authInit = useState('authInit', () => false)
+  if (!import.meta.server && !authInit.value) {
     authInit.value = true
     adapter.init().then(() => {
       if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
