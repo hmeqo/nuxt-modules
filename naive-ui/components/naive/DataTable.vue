@@ -14,6 +14,7 @@ const props = withDefaults(
     rowClass?: (row: any, index: number) => string
     extraRowProps?: (row: any, index: number) => Record<string, unknown>
     throttle?: number
+    itemCount?: number
   }>(),
   {
     throttle: 100,
@@ -25,8 +26,28 @@ const checkedRowKeys = defineModel<any[]>('checked-row-keys', { default: () => [
 const selectedIndex = ref<number>()
 const clickedAt = ref(Date.now())
 
-const page = useSessionState(`${props.stateKey}-page`, { default: () => 1 })
-const pageSize = useCookieState<number | undefined>(`${props.stateKey}-page-size`)
+// 无 itemCount：客户端分页，session/cookie 缓存页号刷新不重置
+// 有 itemCount：服务端分页，父级通过 v-model 控制页号
+const hasItemCount = computed(() => props.itemCount !== undefined)
+const cachedPage = useSessionState(`${props.stateKey}-page`, { default: () => 1 })
+const cachedPageSize = useCookieState<number | undefined>(`${props.stateKey}-page-size`)
+const serverPage = defineModel<number>('page', { default: 1 })
+const serverPageSize = defineModel<number>('page-size', { default: 100 })
+
+const page = computed({
+  get: () => (hasItemCount.value ? serverPage.value : cachedPage.value),
+  set: (val) => {
+    if (hasItemCount.value) serverPage.value = val
+    else cachedPage.value = val
+  },
+})
+const pageSize = computed({
+  get: () => (hasItemCount.value ? serverPageSize.value : cachedPageSize.value ?? 100),
+  set: (val) => {
+    if (hasItemCount.value) serverPageSize.value = val
+    else cachedPageSize.value = val
+  },
+})
 
 const menuPosition = ref({ x: 0, y: 0 })
 const select = (row: unknown, index?: number) => {
@@ -60,7 +81,7 @@ defineExpose({ select, showDropmenu })
       v-model:checked-row-keys="checkedRowKeys"
       class="h-full"
       flex-height
-      :pagination="naiveGetPagination({ page, pageSize })"
+      :pagination="naiveGetPagination({ page, pageSize, itemCount: props.itemCount })"
       :row-props="
         (row, index) => ({
           class: rowClass?.(row, index),
