@@ -26,7 +26,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     authInit.value = true
     onNuxtReady(() => {
       adapter.init().then(() => {
-        if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
+        if (tryUseNuxtApp() && !adapter.isAuthenticated()) navigateTo(adapter.url.login)
       })
     })
   }
