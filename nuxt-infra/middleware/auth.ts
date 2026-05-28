@@ -1,3 +1,5 @@
+import { createError, defineNuxtRouteMiddleware, navigateTo, onNuxtReady, tryUseNuxtApp, useState } from 'nuxt/app'
+import { useAuthAdapter } from '../composables/authAdapter'
 import type { AuthMeta, AuthStrategy } from '../types/auth'
 
 function normalizeShorthand(raw: AuthStrategy): AuthMeta | null {
@@ -10,7 +12,7 @@ function normalizeShorthand(raw: AuthStrategy): AuthMeta | null {
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.prerender) return
 
-  const raw = to.meta.auth
+  const raw = to.meta.auth as AuthStrategy | AuthMeta | undefined
   if (!raw) return
 
   const meta = typeof raw === 'string' ? normalizeShorthand(raw) : raw
@@ -20,10 +22,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isAuthed = adapter.isAuthenticated()
 
   const authInit = useState('authInit', () => false)
-  if (!import.meta.server && !authInit.value) {
+  if (import.meta.client && !authInit.value) {
     authInit.value = true
-    adapter.init().then(() => {
-      if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
+    onNuxtReady(() => {
+      adapter.init().then(() => {
+        if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
+      })
     })
   }
 

@@ -13,7 +13,6 @@
     "@nuxtjs/seo": "^3.4.0",
     "@vueuse/nuxt": "^14.2.1",
     "@ws-hmeqo/nuxt-color-mode": "workspace:^",
-    "@ws-hmeqo/nuxt-web-kit": "workspace:^",
     "@ws-hmeqo/util": "workspace:^",
     "copy-to-clipboard": "^3.3.3",
     "dayjs-nuxt": "^2.1.11",

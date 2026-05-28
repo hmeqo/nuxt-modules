@@ -1,5 +1,5 @@
 import type { RouteLocationAsString } from 'vue-router'
-import type { ModuleOptions } from '../../types'
+import type { ModuleOptions } from '../../types/module'
 import { hasPermission, type PermT } from './base'
 
 type RouteTo =
@@ -46,14 +46,14 @@ function redirectTo(to: RouteLocationAsString) {
 }
 
 function routeTo(to: RouteTo) {
-  const runtimeConfig = useRuntimeConfig().public as ModuleOptions
+  const config = useRuntimeConfig().public.hmeqoNuxtInfra as ModuleOptions | undefined
   if (typeof to === 'object') {
     const { path, redirect } = to
     if (redirect) return redirectTo(path)
-    if (runtimeConfig.routeAuth?.defaultRedirect) return redirectTo(path)
+    if (config?.routeAuth?.defaultRedirect) return redirectTo(path)
     return navigateTo(path)
   }
-  if (runtimeConfig.routeAuth?.defaultRedirect) return redirectTo(to)
+  if (config?.routeAuth?.defaultRedirect) return redirectTo(to)
   return navigateTo(to)
 }
 

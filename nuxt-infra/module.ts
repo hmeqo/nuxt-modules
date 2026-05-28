@@ -8,11 +8,20 @@ import {
   defineNuxtModule,
 } from '@nuxt/kit'
 import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
+import { defu } from 'defu'
 import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
+import type { ModuleOptions } from './types/module'
 
-export default defineNuxtModule({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@ws-hmeqo/nuxt-infra',
+    configKey: 'hmeqoNuxtInfra',
+  },
+
+  defaults: {
+    routeAuth: {
+      defaultRedirect: false,
+    },
   },
 
   hooks: {
@@ -50,16 +59,17 @@ export default defineNuxtModule({
       },
     },
     '@ws-hmeqo/util': {},
-    '@ws-hmeqo/nuxt-web-kit': {},
     '@ws-hmeqo/nuxt-color-mode': {},
   },
 
-  async setup(options, nuxt) {
+  setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     nuxt.options.experimental.typedPages = true
+    nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
+      hmeqoNuxtInfra: options,
+    })
 
-    // Add components
     addComponentsDir({
       path: resolver.resolve('./components'),
     })
