@@ -1,8 +1,5 @@
 function isChunkLoadError(err: unknown): boolean {
-  return (
-    err instanceof TypeError &&
-    err.message.includes('error loading dynamically imported module')
-  )
+  return err instanceof TypeError && err.message.includes('error loading dynamically imported module')
 }
 
 export default defineNuxtPlugin((nuxtApp) => {

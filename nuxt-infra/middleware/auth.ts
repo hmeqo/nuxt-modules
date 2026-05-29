@@ -1,4 +1,4 @@
-import { createError, defineNuxtRouteMiddleware, navigateTo, onNuxtReady, tryUseNuxtApp, useState } from 'nuxt/app'
+import { createError, defineNuxtRouteMiddleware, navigateTo, onNuxtReady, useState } from 'nuxt/app'
 import { useAuthAdapter } from '../composables/authAdapter'
 import type { AuthMeta, AuthStrategy } from '../types/auth'
 
@@ -25,9 +25,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.client && !authInit.value) {
     authInit.value = true
     onNuxtReady(() => {
-      adapter.init().then(() => {
-        if (tryUseNuxtApp() && !adapter.isAuthenticated()) navigateTo(adapter.url.login)
-      })
+      setTimeout(() => {
+        adapter.init().then(() => {
+          if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
+        })
+      }, 0)
     })
   }
 

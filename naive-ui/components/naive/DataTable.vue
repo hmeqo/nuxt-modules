@@ -42,7 +42,7 @@ const page = computed({
   },
 })
 const pageSize = computed({
-  get: () => (hasItemCount.value ? serverPageSize.value : cachedPageSize.value ?? 100),
+  get: () => (hasItemCount.value ? serverPageSize.value : (cachedPageSize.value ?? 100)),
   set: (val) => {
     if (hasItemCount.value) serverPageSize.value = val
     else cachedPageSize.value = val
