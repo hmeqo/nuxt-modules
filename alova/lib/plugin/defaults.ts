@@ -489,6 +489,9 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
       } else if (schema.type === 'number' || schema.type === 'integer') {
         code += `\nexport const ${defaultFnName(name)} = (): number => ${getNonNullExpr(name, schema, ctx)}\n`
         dataTypeNames.push(name)
+      } else if (schema.type === 'object' && schema.additionalProperties && (!schema.properties || !Object.keys(schema.properties).length)) {
+        code += `\nexport const ${defaultFnName(name)} = (): Types.${getTypeName(name)} => ({})\n`
+        dataTypeNames.push(name)
       }
     }
 
