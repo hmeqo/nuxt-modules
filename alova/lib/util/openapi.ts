@@ -32,7 +32,7 @@ export const getTypeName = (name: string) => {
 
 export const fullFnName = (schemaName: string) => `$full${getTypeName(schemaName)}`
 export const initFnName = (schemaName: string) => `$init${getTypeName(schemaName)}`
-export const defaultFnName = (schemaName: string) => `default${getTypeName(schemaName)}`
+export const defaultFnName = (schemaName: string) => `$default${getTypeName(schemaName)}`
 
 /** Convert object to compact string, e.g. { min: 1, max: 10 } */
 export const toObjStr = (obj: Record<string, unknown>) => {

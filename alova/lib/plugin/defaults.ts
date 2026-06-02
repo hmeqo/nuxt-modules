@@ -39,15 +39,17 @@ export interface DefaultsPluginOpts {
 /**
  * 注入到生成 defaults 文件中的运行时辅助代码
  *
- * 生成两类函数：
- * - `fullXxx(opts?)` — 包含所有字段（required + optional），对应 `DeepRequired<T>`
+ * 生成三类函数：
+ * - `$fullXxx(opts?)` — 包含所有字段（required + optional），对应 `DeepRequired<T>`
  *   - `fullXxx()` → DeepRequired<T>（nullable 字段为 null）
  *   - `fullXxx({ notNull: true })` → DeepRequired<T>（nullable 字段为真实值，无 null）
- * - `initXxx()` — 按 schema 正常生成字段默认值，返回 T：
+ * - `$initXxx()` — 按 schema 正常生成字段默认值，返回 T：
  *   - optional 字段（允许 undefined）→ 不生成
  *   - nullable 字段 → null
  *   - required 非 nullable 字段 → 按类型生成默认值
  *   主要用于 toXxx 补全缺失字段，以及作为表单初始值
+ * - `$defaultXxx()` — 纯字典类型（仅 additionalProperties，无具名属性）返回 `{}`
+ *   无状态字段需要初始化，直接返回固定值
  */
 const runtimeHelperCode = (extraImports: string) => `/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/unified-signatures */
@@ -467,7 +469,7 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
 
     let code = ''
 
-    // 阶段 1：收集 enum / integer alias 等简单数据类型（直接返回固定值的函数）
+    // 阶段 1：收集简单数据类型（enum、integer alias、纯字典类型，直接返回固定值的函数）
     const dataTypeNames: string[] = []
 
     const ctx: FieldGenContext = {
