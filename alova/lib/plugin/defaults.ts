@@ -154,7 +154,7 @@ const getNonNullExpr = (fieldName: string, schema: OpenAPISchemaObject, ctx: Fie
     case 'object':
       return '{}'
     default:
-      return "''"
+      return 'undefined'
   }
 }
 
