@@ -2,15 +2,15 @@
 
 import { createPlugin } from '@alova/wormhole/plugin'
 import {
-  extractDiscriminatedVariants,
   getRefName,
   getTypeName,
   initFnName,
-  isDiscriminatedUnion,
   isEnum,
   isRef,
   isSchemaObject,
   resolveSchemaVariants,
+  tryResolveDiscriminatedUnion,
+  type DiscriminatedUnionResult,
   type OpenAPISchema,
   type OpenAPISchemaObject,
   type OpenAPISchemas,
@@ -112,6 +112,8 @@ const buildPkExpr = (schema: OpenAPISchemaObject, pkRules: PkRule[]): string => 
 
 // ─── 层 2：字段取值表达式生成 ─────────────────────────────────────────────────
 
+const SRC = 'obj'
+
 /**
  * 判断一个 schema 是否为有具名属性的内联 object（需要展开取值）
  */
@@ -142,7 +144,7 @@ const buildFieldExpr = (
   fieldName: string,
   schema: OpenAPISchema,
   schemas: OpenAPISchemas,
-  accessPrefix = 'obj?.',
+  accessPrefix = `${SRC}?.`,
 ): string => {
   const access = `${accessPrefix}${fieldName}`
 
@@ -220,42 +222,35 @@ ${fieldLines.join(',\n')}
  * 为 discriminated union 构建带 if 链分发的 defineTo(...) 函数代码
  * 每个变体对应一个 if 分支，内联 object 字段按字段展开取值，第一个变体作为 fallback
  */
-const buildDiscriminatedUnionToFn = (
-  name: string,
-  variants: OpenAPISchemaObject[],
-  rawVariants: OpenAPISchema[],
-  schemas: OpenAPISchemas,
-  unionType = 'type',
-): string => {
-  const discriminatedVariants = extractDiscriminatedVariants(variants, rawVariants, unionType)
+const buildDiscriminatedUnionToFn = (name: string, du: DiscriminatedUnionResult, schemas: OpenAPISchemas): string => {
+  const { fieldName, variants: discriminatedVariants } = du
 
   const buildCaseReturn = ({ typeValue, schema: variant, refName }: (typeof discriminatedVariants)[number]): string => {
-    // 若变体来自 allOf [$ref, ...] 则直接调用对应 toXxx 函数
     if (refName) {
-      return `{ ${unionType}: ${JSON.stringify(typeValue)}, ...${toFnName(refName)}(obj) }`
+      return `{ ${fieldName}: ${JSON.stringify(typeValue)}, ...${toFnName(refName)}(obj) }`
     }
 
     const otherFields = Object.entries(variant.properties ?? {})
-      .filter(([key]) => key !== unionType)
+      .filter(([key]) => key !== fieldName)
       .map(([key, prop]) => {
         const expr = isInlineObject(prop)
-          ? buildInlineObjectExpr(`obj?.${key}`, prop, schemas, 8)
+          ? buildInlineObjectExpr(`${SRC}?.${key}`, prop, schemas, 8)
           : buildFieldExpr(key, prop, schemas)
         return `      ${key}: ${expr}`
       })
 
     if (otherFields.length === 0) {
-      return `{ ${unionType}: ${JSON.stringify(typeValue)} }`
+      return `{ ${fieldName}: ${JSON.stringify(typeValue)} }`
     }
     return `{
-      ${unionType}: ${JSON.stringify(typeValue)},
+      ${fieldName}: ${JSON.stringify(typeValue)},
 ${otherFields.join(',\n')}
     }`
   }
 
   const branches = buildIfChain(
     discriminatedVariants,
-    (dv) => `obj?.${unionType} === ${JSON.stringify(dv.typeValue)}`,
+    (dv) => `${SRC}?.${fieldName} === ${JSON.stringify(dv.typeValue)}`,
     buildCaseReturn,
   )
 
@@ -293,16 +288,13 @@ export const toPlugin = createPlugin((outputDir: string, opts?: ToOpts) => ({
       }
 
       // oneOf/anyOf/allOf 联合类型
-      const rawVariants = schema.oneOf ?? schema.anyOf ?? schema.allOf ?? []
-      const schemaVariants = resolveSchemaVariants(schema, schemas)
-      if (schemaVariants.length === 0) continue
-
-      const detectedUnionType = isDiscriminatedUnion(schemaVariants, opts?.unionType)
-      if (detectedUnionType !== false) {
+      const du = tryResolveDiscriminatedUnion(schema, schemas, opts?.unionType)
+      if (du) {
         // Discriminated union：switch dispatch
-        code += buildDiscriminatedUnionToFn(name, schemaVariants, rawVariants, schemas, detectedUnionType)
+        code += buildDiscriminatedUnionToFn(name, du, schemas)
       } else {
         // 普通联合类型：取第一个 object 变体生成
+        const schemaVariants = resolveSchemaVariants(schema, schemas)
         const firstObj = schemaVariants.find((v) => v.type === 'object' && v.properties)
         if (firstObj) code += buildObjectToFn(name, firstObj, schemas, pkRules)
       }
