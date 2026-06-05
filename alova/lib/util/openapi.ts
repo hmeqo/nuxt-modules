@@ -22,10 +22,15 @@ export const getTypeName = (name: string) => {
       if (index === 0) {
         return part.charAt(0).toUpperCase() + part.slice(1).replaceAll('-', '_')
       }
-      return part
-        .replace(/([a-z])([A-Z])/g, '$1_$2')
-        .toLowerCase()
-        .replaceAll('-', '_')
+      return (
+        part
+          // Handle acronym boundaries: "VOBase" -> "VO_Base"
+          .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+          // Handle camelCase boundaries: "couponVO" -> "coupon_VO"
+          .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+          .toLowerCase()
+          .replaceAll('-', '_')
+      )
     })
     .join('_')
 }
