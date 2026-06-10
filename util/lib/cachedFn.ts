@@ -1,7 +1,3 @@
-import type { NoPromise } from './types'
-
-export * from './lib'
-
 export const defineCachedFn = <A extends unknown[], R>(fn: (...args: A) => NoPromise<R>): ((...args: A) => R) => {
   let hasResult = false
   let cachedResult: R

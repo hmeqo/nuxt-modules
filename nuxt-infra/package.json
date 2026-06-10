@@ -1,6 +1,11 @@
 {
   "name": "@ws-hmeqo/nuxt-infra",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts",
+    "./type": "./types/index.d.ts",
+    "./types/*": "./types/*.d.ts"
+  },
   "dependencies": {
     "@hmeqo/paths": "^0.1.1",
     "@nuxt/eslint": "^1.15.2",

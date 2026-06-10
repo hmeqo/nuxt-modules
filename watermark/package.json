@@ -1,5 +1,10 @@
 {
   "name": "@ws-hmeqo/watermark",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts",
+    "./type": "./types/index.d.ts",
+    "./types/*": "./types/*.d.ts"
+  },
   "dependencies": {}
 }

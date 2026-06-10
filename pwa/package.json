@@ -1,6 +1,9 @@
 {
   "name": "@ws-hmeqo/pwa",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts"
+  },
   "dependencies": {
     "@vite-pwa/nuxt": "^1.1.1"
   }

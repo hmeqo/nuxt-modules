@@ -1,6 +1,10 @@
 {
   "name": "@ws-hmeqo/i18n",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts",
+    "./lib": "./lib/index.ts"
+  },
   "dependencies": {
     "@nuxtjs/i18n": "^10.2.4"
   }

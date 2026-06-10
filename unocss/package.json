@@ -1,6 +1,9 @@
 {
   "name": "@ws-hmeqo/unocss",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts"
+  },
   "dependencies": {
     "@unocss/nuxt": "66.6.0",
     "@unocss/preset-icons": "66.6.0",

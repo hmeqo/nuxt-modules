@@ -1,6 +1,9 @@
 {
   "name": "@ws-hmeqo/shadcn",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts"
+  },
   "dependencies": {
     "@lucide/vue": "^1.16.0",
     "class-variance-authority": "^0.7.1",

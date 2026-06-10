@@ -1,6 +1,9 @@
 {
   "name": "@ws-hmeqo/tailwindcss",
   "version": "0.1.0",
+  "exports": {
+    ".": "./module.ts"
+  },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "tailwindcss": "^4.3.0",
