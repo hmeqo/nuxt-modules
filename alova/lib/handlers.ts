@@ -1,19 +1,5 @@
 import { BizError, type EventGenerics, type EventSystem } from './event'
 
-/**
- * Transform the data to FormData
- */
-export const transformToFormData = (data: unknown): FormData => {
-  if (data instanceof FormData) return data
-  const formData = new FormData()
-  if (data && typeof data === 'object' && data !== null) {
-    Object.entries(data as Record<string, unknown>).forEach(([key, value]) => {
-      formData.append(key, value instanceof Blob ? value : String(value))
-    })
-  }
-  return formData
-}
-
 export type CreateAlovaHandlersOpts = {
   credentials?: RequestCredentials
 }
@@ -29,14 +15,6 @@ export const createAlovaHandlers = <
   return {
     beforeRequest: (request: Req) => {
       request.credentials = opts?.credentials
-
-      const meta = request.meta
-      if (meta?.multipart || request.data instanceof FormData) {
-        if (!(request.data instanceof FormData)) {
-          request.data = transformToFormData(request.data)
-        }
-      }
-
       emit('request:start', { request })
     },
     onSuccess: <T>(response: Resp, request: Req, data: T): T => {
