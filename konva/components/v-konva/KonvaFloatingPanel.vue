@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { GripHorizontal } from '@lucide/vue'
+
 const props = withDefaults(
   defineProps<{
     title?: string
@@ -103,7 +105,7 @@ const { startDrag } = (() => {
           <slot name="icon" />
           <span>{{ title }}</span>
         </div>
-        <Icon name="lucide:grip-horizontal" class="text-muted-foreground/60 text-xs" />
+        <GripHorizontal class="text-muted-foreground/60 text-xs" />
       </div>
 
       <slot />
