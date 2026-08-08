@@ -5,11 +5,11 @@
     ".": "./module.ts"
   },
   "dependencies": {
-    "@lucide/vue": "^1.16.0",
+    "@lucide/vue": "^1.29.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "shadcn-nuxt": "^2.6.2",
-    "shadcn-vue": "^2.7.3",
-    "tailwind-merge": "^3.5.0"
+    "shadcn-nuxt": "^2.8.1",
+    "shadcn-vue": "^2.8.1",
+    "tailwind-merge": "^3.6.0"
   }
 }

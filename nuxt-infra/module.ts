@@ -8,7 +8,7 @@ import {
   defineNuxtModule,
 } from '@nuxt/kit'
 import type { ModuleOptions as DayjsOptions } from 'dayjs-nuxt'
-import { defu } from 'defu'
+import defu from 'defu'
 import type { ModuleOptions as NuxtOgImageOptions } from 'nuxt-og-image'
 import type { ModuleOptions } from './types/module'
 

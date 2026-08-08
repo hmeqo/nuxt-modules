@@ -5,6 +5,6 @@
     ".": "./module.ts"
   },
   "dependencies": {
-    "@nuxtjs/color-mode": "^4.0.0"
+    "@nuxtjs/color-mode": "^4.0.1"
   }
 }

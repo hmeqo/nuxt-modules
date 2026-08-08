@@ -7,32 +7,34 @@
     "./types/*": "./types/*.d.ts"
   },
   "dependencies": {
+    "@golar/vue": "^0.1.10",
     "@hmeqo/paths": "^0.1.1",
-    "@nuxt/eslint": "^1.15.2",
-    "@nuxt/eslint-config": "^1.15.2",
+    "@nuxt/eslint": "^1.17.0",
+    "@nuxt/eslint-config": "^1.17.0",
     "@nuxt/fonts": "^0.13.0",
-    "@nuxt/icon": "^2.2.2",
-    "@nuxt/kit": "^4.4.2",
+    "@nuxt/icon": "^2.4.1",
+    "@nuxt/kit": "^4.5.2",
     "@nuxt/test-utils": "^3.23.0",
     "@nuxtjs/device": "^4.0.0",
     "@nuxtjs/seo": "^3.4.0",
-    "@vueuse/nuxt": "^14.2.1",
+    "@vueuse/nuxt": "^14.4.0",
     "@ws-hmeqo/nuxt-color-mode": "workspace:^",
     "@ws-hmeqo/util": "workspace:^",
     "copy-to-clipboard": "^3.3.3",
     "dayjs-nuxt": "^2.1.11",
     "defu": "^6.1.7",
-    "eslint": "^9.39.4",
+    "eslint": "^9.39.5",
+    "golar": "^0.1.10",
     "js-cookie": "^3.0.8",
     "lodash": "^4.18.1",
-    "nuxt": "^4.4.2",
-    "prettier": "^3.8.3",
-    "vitest": "^4.1.4",
-    "vue": "^3.5.32",
-    "vue-router": "^5.0.4"
+    "nuxt": "^4.5.2",
+    "prettier": "^3.9.6",
+    "vitest": "^4.1.10",
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
-    "@types/lodash": "^4.17.24"
+    "@types/lodash": "^4.17.25"
   }
 }

@@ -15,7 +15,7 @@ export const valibotToNaiveRulesPlugin = createPlugin((outputDir: string, opts?:
     const schemas: OpenAPISchemas = document.components?.schemas ?? {}
     if (!schemas) return
 
-    let code = `import { valibotToRules } from '@ws-hmeqo/alova/lib/util/valibot-rules'
+    let code = `import { valibotToRules } from '@ws-hmeqo/alova/util/valibot-rules'
 import type { ObjectEntries, ObjectSchema } from 'valibot'
 import * as v from './gen/valibot.gen'
 

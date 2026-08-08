@@ -8,9 +8,9 @@
     "./types/*": "./types/*.d.ts"
   },
   "dependencies": {
-    "@lucide/vue": "^1.16.0",
-    "konva": "^10.2.5",
-    "uuid": "^13.0.0",
+    "@lucide/vue": "^1.29.0",
+    "konva": "^10.3.0",
+    "uuid": "^13.0.2",
     "vue-konva": "^3.4.0"
   }
 }

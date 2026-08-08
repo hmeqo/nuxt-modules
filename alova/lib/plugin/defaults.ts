@@ -56,7 +56,7 @@ export interface DefaultsPluginOpts {
 const runtimeHelperCode = (extraImports: string) => `/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/unified-signatures */
 import type Types from './globals'
-import { defu } from 'defu'
+import defu from 'defu'
 ${extraImports}
 export type DeepRequired<T> = T extends object
   ? { [K in keyof T]-?: T[K] extends (infer U)[] ? DeepRequired<U>[] : T[K] extends object ? DeepRequired<T[K]> : T[K] }

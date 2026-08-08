@@ -6,6 +6,6 @@
     "./lib": "./lib/index.ts"
   },
   "dependencies": {
-    "@nuxtjs/i18n": "^10.2.4"
+    "@nuxtjs/i18n": "^10.6.0"
   }
 }

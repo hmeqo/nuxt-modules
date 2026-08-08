@@ -1,6 +1,5 @@
 import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { ModuleOptions as I18nOptions } from '@nuxtjs/i18n'
-import { defu } from 'defu'
 
 export default defineNuxtModule({
   meta: {
@@ -9,7 +8,7 @@ export default defineNuxtModule({
 
   moduleDependencies: {
     '@nuxtjs/i18n': {
-      defaults: <Partial<I18nOptions>>{
+      defaults: <Partial<Omit<I18nOptions, 'locales'>>>{
         strategy: 'no_prefix',
         detectBrowserLanguage: false,
         experimental: {
@@ -26,14 +25,10 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
 
     // Pass module options to runtimeConfig object
-    nuxt.options.runtimeConfig.public = defu(
-      {
-        i18n: {
-          cookieKey: options.detectBrowserLanguage?.cookieKey || 'language',
-        },
-      },
-      nuxt.options.runtimeConfig.public,
-    )
+    nuxt.options.runtimeConfig.public.i18n = {
+      ...nuxt.options.runtimeConfig.public.i18n,
+      cookieKey: options.detectBrowserLanguage?.cookieKey || 'language',
+    }
 
     // Add components
     addComponentsDir({
