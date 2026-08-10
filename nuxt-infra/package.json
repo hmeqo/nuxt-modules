@@ -4,6 +4,7 @@
   "exports": {
     ".": "./module.ts",
     "./type": "./types/index.d.ts",
+    "./types": "./types/index.d.ts",
     "./types/*": "./types/*.d.ts"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "@nuxtjs/device": "^4.0.0",
     "@nuxtjs/seo": "^3.4.0",
     "@vueuse/nuxt": "^14.4.0",
+    "@vueuse/router": "^14.4.0",
     "@ws-hmeqo/nuxt-color-mode": "workspace:^",
     "@ws-hmeqo/util": "workspace:^",
     "copy-to-clipboard": "^3.3.3",

@@ -2,7 +2,8 @@
   "name": "@ws-hmeqo/shadcn-unocss",
   "version": "0.1.0",
   "exports": {
-    ".": "./module.ts"
+    ".": "./module.ts",
+    "./config": "./config.ts"
   },
   "dependencies": {
     "@lucide/vue": "^1.29.0",

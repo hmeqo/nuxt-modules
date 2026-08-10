@@ -4,7 +4,8 @@
   "exports": {
     ".": "./module.ts",
     "./lib/*": "./lib/*.ts",
-    "./themes/*": "./themes/*.ts"
+    "./themes/*": "./themes/*.ts",
+    "./utils/*": "./utils/*.ts"
   },
   "dependencies": {
     "@bg-dev/nuxt-naiveui": "2.0.0",

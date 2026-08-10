@@ -1,13 +1,23 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 /**
+ * URL 状态绑定 composable。
+ *
+ * 核心引擎 = @vueuse/router 的 useRouteQuery / useRouteParams（社区维护的双向同步：
+ * 读随 route 变化——前进/后退/外部改 URL 自动反映；写回批量 replace、置回默认自动删 key）。
+ * 外层补本项目特性：多 key 别名、validate、showError、fallback、default。
+ *
  * Examples:<br/>
  * useQueryInt('page', { default: () => 1, validate: (v) => v > 0 })<br/>
  * useQueryInt('page', { showError: true }) // throw error if query is not found<br/>
- * useQueryInt('page', { fallback: '/login }) // redirect to /login if query is not found
+ * useQueryInt('page', { fallback: '/login' }) // redirect to /login if query is not found
  * useQueryInt(['page', 'p'], { default: () => 1 }) // query 'page' has higher priority
  */
 
-import type { LocationQueryRaw, RouteLocationNormalizedLoaded } from 'vue-router'
+import { useRouteParams, useRouteQuery } from '@vueuse/router'
+import type { RouteLocationNormalizedLoaded, RouteParamValueRaw } from 'vue-router'
+
+// vue-router 5 移除了 RouteQueryValueRaw 导出，本地等价类型
+type RawQueryValue = RouteParamValueRaw | string[]
 
 type Opts<T> = {
   /**
@@ -35,17 +45,12 @@ type Opts<T> = {
    * @default undefined
    */
   validate?: (v: T) => boolean
-  /**
-   * Don't immediate update query string
-   * @default true
-   */
-  lazy?: boolean
 }
 
 type Serializer<T> = { in: (v: unknown) => T | undefined; out: (v: unknown) => string }
 
 const StringSerializer: Serializer<string> = {
-  in: (v) => `${v}`,
+  in: (v) => (v == null ? undefined : `${v}`),
   out: (v) => `${v}`,
 }
 
@@ -60,12 +65,10 @@ const NumberSerializer: Serializer<number> = {
 
 export function toAutoController<T>({
   data,
-  update,
   errorMessage,
   opts,
 }: {
   data: Ref<T | undefined>
-  update: () => void
   errorMessage: () => string
   opts?: Opts<T>
 }) {
@@ -80,82 +83,73 @@ export function toAutoController<T>({
       throw error
     }
   }
-  if (opts?.lazy === false) update()
-  return computed({
-    get: () => data.value,
-    set: (v) => {
-      const updated = v !== data.value
-      data.value = v
-      if (updated) update()
-    },
-  })
+  return data
+}
+
+function parseWith<T>(serializer: Serializer<T>, opts: Opts<T> | undefined, raw: unknown): T | undefined {
+  const parsed = serializer.in(raw)
+  if (parsed === undefined || opts?.validate?.(parsed) === false) return undefined
+  return parsed
 }
 
 function _useQuery<T>(keyOrKeys: string | string[], serializer: Serializer<T>, opts?: Opts<T>) {
   const keys = Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys]
-  const key = keys[0]!
-  const route = (opts?.route || useRoute()) as RouteLocationNormalizedLoaded & {
-    meta: { __useQuery: LocationQueryRaw }
-  }
+  const primary = keys[0]!
+  const aliases = keys.slice(1)
+  const route = (opts?.route || useRoute()) as RouteLocationNormalizedLoaded
+  const router = useRouter()
+  const def = opts?.default?.()
 
-  const data = ref<T | undefined>()
-  for (const key of keys) {
-    if (key in route.query) {
-      data.value = serializer.in(route.query[key])
-      break
-    }
-  }
-  if (data.value !== undefined && opts?.validate?.(data.value) === false) data.value = undefined
-  data.value = data.value ?? opts?.default?.()
+  // 主 key 读引擎：@vueuse/router 维护的 customRef + watch（读随 route 变化，见 useRouteQuery 实现）
+  const engine = useRouteQuery<RawQueryValue, T | undefined>(primary, undefined, {
+    route,
+    transform: {
+      get: (v) => parseWith(serializer, opts, v),
+    },
+  })
+
+  const data = computed<T | undefined>({
+    get: () => {
+      // 主 key 优先（文档语义），别名兜底；主 key 缺失/不可解析时回退别名
+      const primaryVal = engine.value
+      if (primaryVal !== undefined) return primaryVal
+      for (const key of aliases) {
+        if (key in route.query) {
+          const parsed = parseWith(serializer, opts, route.query[key])
+          if (parsed !== undefined) return parsed
+        }
+      }
+      return def
+    },
+    set: (v) => {
+      // 统一构造新 query 一次 replace：
+      // - 清全部 keys（含别名）→ 避免残留别名在主 key 删除后复活旧值
+      // - v === undefined / v === def → 不写（删 key / 回默认清理），VueUse 语义
+      // - 引擎的写队列表达不了删除/别名清理，这里补薄层（见 F1/F3/F4 review）
+      const query = { ...route.query }
+      for (const key of keys) delete query[key]
+      if (v !== undefined && v !== def) query[primary] = serializer.out(v)
+      router.replace({ query })
+    },
+  })
 
   return toAutoController({
     data,
-    update: () => {
-      const value = data.value === undefined ? undefined : serializer.out(data.value)
-      for (const key of keys) delete route.query[key]
-      if (value === undefined) delete route.query[key]
-      else route.query[key] = value
-      navigateTo({
-        path: route.path,
-        query: { ...route.query, ...route.meta.__useQuery },
-        replace: true,
-        force: true,
-      })
-    },
-    errorMessage: () => `Cannot parse ${keyOrKeys}: ${route.query[key]}`,
+    errorMessage: () => `Cannot parse ${keyOrKeys}: ${route.query[primary]}`,
     opts,
   })
 }
 
 function _usePathParam<T>(key: string, serializer: Serializer<T>, opts?: Opts<T>) {
-  const route = (opts?.route || useRoute()) as RouteLocationNormalizedLoaded & {
-    meta: { __usePathParam: { key: string; oldValue: unknown; newValue: unknown }[] }
-  }
+  const route = (opts?.route || useRoute()) as RouteLocationNormalizedLoaded
 
-  const data = ref<T | undefined>(serializer.in(route.params[key as keyof typeof route.params]))
-  if (data.value !== undefined && opts?.validate?.(data.value) === false) data.value = undefined
-  data.value = data.value ?? opts?.default?.()
+  const data = useRouteParams<RouteParamValueRaw, T | undefined>(key, undefined, {
+    route,
+    transform: (v) => parseWith(serializer, opts, v),
+  })
 
   return toAutoController({
     data,
-    update: () => {
-      const value = data.value === undefined ? undefined : serializer.out(data.value)
-      route.meta.__usePathParam = {
-        ...route.meta.__usePathParam,
-        [key]: {
-          oldValue: route.params[key as keyof typeof route.params]?.[0],
-          newValue: value,
-        },
-      }
-      // navigateTo({
-      //   path: Object.values(route.meta.__usePathParam).reduce(
-      //     (path, { oldValue, newValue }) => path.replace(`${endpoint}${oldValue}`, `${endpoint}${newValue}`),
-      //     route.path,
-      //   ),
-      //   query: route.query,
-      //   replace: true,
-      // })
-    },
     errorMessage: () => `Cannot parse path param ${key}: ${route.params[key as keyof typeof route.params]}`,
     opts,
   })
