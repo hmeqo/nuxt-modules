@@ -7,7 +7,7 @@ export interface AuthAdapter {
   }
   init(): Promise<void>
   isAuthenticated(): boolean
-  getPermissions(): string[]
+  getPermissions(): string[] | undefined
   checkPermission(permissions: string[], required: string | string[]): boolean
 }
 

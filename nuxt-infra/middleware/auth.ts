@@ -41,7 +41,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (meta.permissions && isAuthed) {
     const required = Array.isArray(meta.permissions) ? meta.permissions : [meta.permissions]
-    if (!adapter.checkPermission(adapter.getPermissions(), required)) {
+    if (!adapter.checkPermission(adapter.getPermissions() ?? [], required)) {
       if (meta.forbidden) return navigateTo(meta.forbidden)
       throw createError({ statusCode: 403, fatal: true })
     }
