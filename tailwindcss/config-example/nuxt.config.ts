@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
   modules: [
-    '@ws-hmeqo/tailwindcss',
+    '@remqo/tailwindcss',
     // ...
   ],
   css: [

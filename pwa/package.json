@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/pwa",
+  "name": "@remqo/pwa",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts"

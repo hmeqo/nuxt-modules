@@ -5,7 +5,7 @@ import modern from './themes/modern'
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/naive-ui',
+    name: '@remqo/naive-ui',
   },
 
   moduleDependencies: (nuxt) => ({

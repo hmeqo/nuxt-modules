@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/watermark",
+  "name": "@remqo/watermark",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts",

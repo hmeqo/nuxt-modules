@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/konva",
+  "name": "@remqo/konva",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts",
@@ -8,8 +8,8 @@
     "./types/*": "./types/*.d.ts"
   },
   "dependencies": {
-    "@lucide/vue": "^1.29.0",
-    "konva": "^10.3.0",
+    "@lucide/vue": "^1.41.0",
+    "konva": "^10.3.3",
     "uuid": "^13.0.2",
     "vue-konva": "^3.4.0"
   }

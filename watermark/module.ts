@@ -4,7 +4,7 @@ import type { ModuleOptions } from './types'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@ws-hmeqo/watermark',
+    name: '@remqo/watermark',
     configKey: 'watermark',
   },
 

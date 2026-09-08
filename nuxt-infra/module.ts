@@ -14,8 +14,8 @@ import type { ModuleOptions } from './types/module'
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: '@ws-hmeqo/nuxt-infra',
-    configKey: 'hmeqoNuxtInfra',
+    name: '@remqo/nuxt-infra',
+    configKey: 'nuxtInfra',
   },
 
   defaults: {
@@ -27,7 +27,7 @@ export default defineNuxtModule<ModuleOptions>({
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@ws-hmeqo/nuxt-infra/types',
+        types: '@remqo/nuxt-infra/types',
       })
     },
   },
@@ -58,8 +58,8 @@ export default defineNuxtModule<ModuleOptions>({
         defaultTimezone: 'Asia/Shanghai',
       },
     },
-    '@ws-hmeqo/util': {},
-    '@ws-hmeqo/nuxt-color-mode': {},
+    '@remqo/util': {},
+    '@remqo/nuxt-color-mode': {},
   },
 
   setup(options, nuxt) {
@@ -67,7 +67,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.options.experimental.typedPages = true
     nuxt.options.runtimeConfig.public = defu(nuxt.options.runtimeConfig.public, {
-      hmeqoNuxtInfra: options,
+      nuxtInfra: options,
     })
 
     addComponentsDir({

@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/naive-ui",
+  "name": "@remqo/naive-ui",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts",
@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@bg-dev/nuxt-naiveui": "2.0.0",
-    "naive-ui": "^2.44.1"
+    "naive-ui": "^2.45.3"
   }
 }

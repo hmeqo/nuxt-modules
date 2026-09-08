@@ -2,16 +2,16 @@ import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/alova',
+    name: '@remqo/alova',
   },
   moduleDependencies: {
-    '@ws-hmeqo/util': {},
+    '@remqo/util': {},
   },
 
   hooks: {
     'prepare:types': ({ references }) => {
       references.push({
-        types: '@ws-hmeqo/alova/types',
+        types: '@remqo/alova/types',
       })
     },
   },

@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/page-history",
+  "name": "@remqo/page-history",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts"

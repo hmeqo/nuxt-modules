@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  modules: ['@ws-hmeqo/nuxt-color-mode', '@ws-hmeqo/tailwindcss', '@ws-hmeqo/shadcn'],
+  modules: ['@remqo/nuxt-color-mode', '@remqo/tailwindcss', '@remqo/shadcn'],
   colorMode: {
     preference: 'dark',
   },

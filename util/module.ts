@@ -2,7 +2,7 @@ import { addImportsDir, createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/util',
+    name: '@remqo/util',
   },
 
   async setup(options, nuxt) {

@@ -3,7 +3,7 @@ import type { ModuleOptions as ColorModeModuleOptions } from '@nuxtjs/color-mode
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/nuxt-color-mode',
+    name: '@remqo/nuxt-color-mode',
   },
 
   moduleDependencies: {

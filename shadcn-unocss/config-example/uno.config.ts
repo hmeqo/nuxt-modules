@@ -1,4 +1,4 @@
-import shadcnUnocssConfig from '@ws-hmeqo/shadcn-unocss/config'
+import shadcnUnocssConfig from '@remqo/shadcn-unocss/config'
 import {
   defineConfig,
   mergeConfigs,

@@ -3,7 +3,7 @@ import type { ModuleOptions as I18nOptions } from '@nuxtjs/i18n'
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/i18n',
+    name: '@remqo/i18n',
   },
 
   moduleDependencies: {

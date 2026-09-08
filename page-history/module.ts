@@ -2,7 +2,7 @@ import { addComponentsDir, addImportsDir, addPlugin, createResolver, defineNuxtM
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/page-history',
+    name: '@remqo/page-history',
   },
 
   setup(options, nuxt) {

@@ -15,7 +15,7 @@ export const valibotToNaiveRulesPlugin = createPlugin((outputDir: string, opts?:
     const schemas: OpenAPISchemas = document.components?.schemas ?? {}
     if (!schemas) return
 
-    let code = `import { valibotToRules } from '@ws-hmeqo/alova/util/valibot-rules'
+    let code = `import { valibotToRules } from '@remqo/alova/util/valibot-rules'
 import type { ObjectEntries, ObjectSchema } from 'valibot'
 import * as v from './gen/valibot.gen'
 
@@ -97,7 +97,7 @@ export const naiveRulesPlugin = createPlugin((outputDir: string, opts?: RulesOpt
     const schemas: OpenAPISchemas = document.components?.schemas ?? {}
     if (!schemas) return
 
-    const presetPath = '@ws-hmeqo/naive-ui/utils/rules'
+    const presetPath = '@remqo/naive-ui/utils/rules'
     let code = `import { naiveRulePresets } from '${presetPath}'
 `
 

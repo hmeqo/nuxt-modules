@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@ws-hmeqo/i18n'],
+  modules: ['@remqo/i18n'],
   i18n: {
     locales: [
       {

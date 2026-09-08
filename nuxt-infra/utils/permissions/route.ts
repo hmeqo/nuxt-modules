@@ -46,7 +46,7 @@ function redirectTo(to: RouteLocationAsString) {
 }
 
 function routeTo(to: RouteTo) {
-  const config = useRuntimeConfig().public.hmeqoNuxtInfra as ModuleOptions | undefined
+  const config = useRuntimeConfig().public.nuxtInfra as ModuleOptions | undefined
   if (typeof to === 'object') {
     const { path, redirect } = to
     if (redirect) return redirectTo(path)

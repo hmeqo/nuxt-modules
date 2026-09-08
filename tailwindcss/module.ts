@@ -4,7 +4,7 @@ import defu from 'defu'
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/tailwindcss',
+    name: '@remqo/tailwindcss',
   },
 
   moduleDependencies: {},

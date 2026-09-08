@@ -56,7 +56,7 @@ export type ToOpts = {
 const RUNTIME_HELPER_CODE = `/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as defaults from './defaults'
 import type Types from './globals'
-import { deepFill } from '@ws-hmeqo/util/lib'
+import { deepFill } from '@remqo/util/lib'
 
 type DefineToFn<T> = {
   (obj: any): T

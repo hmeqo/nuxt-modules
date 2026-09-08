@@ -1,4 +1,4 @@
-import { defaultDict } from '@ws-hmeqo/util/lib/collection'
+import { defaultDict } from '@remqo/util/lib/collection'
 import type { AlovaCustomTypeMeta } from '../types'
 
 export interface RequestInfo {

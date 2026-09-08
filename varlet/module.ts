@@ -2,7 +2,7 @@ import { addComponentsDir, addPlugin, createResolver, defineNuxtModule } from '@
 
 export default defineNuxtModule({
   meta: {
-    name: '@ws-hmeqo/varlet',
+    name: '@remqo/varlet',
   },
 
   moduleDependencies: {

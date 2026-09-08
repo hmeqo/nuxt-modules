@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dateString, timeString } from '@ws-hmeqo/util/lib/date'
+import { dateString, timeString } from '@remqo/util/lib/date'
 
 const props = defineProps<{
   type?: 'datetime' | 'date'

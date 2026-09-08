@@ -1,16 +1,16 @@
 {
-  "name": "@ws-hmeqo/shadcn-unocss",
+  "name": "@remqo/shadcn-unocss",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts",
     "./config": "./config.ts"
   },
   "dependencies": {
-    "@lucide/vue": "^1.29.0",
+    "@lucide/vue": "^1.41.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "radix-vue": "^1.9.17",
-    "shadcn-nuxt": "^2.8.1",
+    "shadcn-nuxt": "^2.8.2",
     "tailwind-merge": "^3.6.0",
     "unocss": "66.6.0",
     "unocss-preset-animations": "^1.3.0",

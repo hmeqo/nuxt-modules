@@ -1,5 +1,5 @@
 {
-  "name": "@ws-hmeqo/pinia",
+  "name": "@remqo/pinia",
   "version": "0.1.0",
   "exports": {
     ".": "./module.ts"
