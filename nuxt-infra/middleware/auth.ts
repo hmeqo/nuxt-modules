@@ -3,9 +3,9 @@ import { useAuthAdapter } from '../composables/authAdapter'
 import type { AuthMeta, AuthStrategy } from '../types/auth'
 
 function normalizeShorthand(raw: AuthStrategy): AuthMeta | null {
-  if (raw === 'optional') return null
-  if (raw === 'guest') return { guest: true }
-  if (raw === 'authenticated') return { required: true }
+  if (raw === 'public') return null
+  if (raw === 'anonymous') return { anonymous: true }
+  if (raw === 'authenticated') return { authenticated: true }
   return null
 }
 
@@ -33,11 +33,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (meta.redirect) {
     if (meta.redirect.authed && isAuthed) return navigateTo(meta.redirect.authed)
-    if (meta.redirect.guest && !isAuthed) return navigateTo(meta.redirect.guest)
+    if (meta.redirect.anonymous && !isAuthed) return navigateTo(meta.redirect.anonymous)
   }
 
-  if (meta.guest && isAuthed) return navigateTo(adapter.url.home)
-  if (meta.required && !isAuthed) return navigateTo(adapter.url.login)
+  if (meta.anonymous && isAuthed) return navigateTo(adapter.url.home)
+  if (meta.authenticated && !isAuthed) return navigateTo(adapter.url.login)
 
   if (meta.permissions && isAuthed) {
     const required = Array.isArray(meta.permissions) ? meta.permissions : [meta.permissions]

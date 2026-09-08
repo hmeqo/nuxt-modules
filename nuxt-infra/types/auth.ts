@@ -11,15 +11,15 @@ export interface AuthAdapter {
   checkPermission(permissions: string[], required: string | string[]): boolean
 }
 
-export type AuthStrategy = 'authenticated' | 'guest' | 'optional'
+export type AuthStrategy = 'authenticated' | 'anonymous' | 'public'
 
 export interface AuthMeta {
-  required?: boolean
-  guest?: boolean
+  authenticated?: boolean
+  anonymous?: boolean
   permissions?: string | string[]
   forbidden?: RouteLocationAsString
   redirect?: {
     authed?: RouteLocationAsString
-    guest?: RouteLocationAsString
+    anonymous?: RouteLocationAsString
   }
 }
