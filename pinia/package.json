@@ -5,9 +5,8 @@
     ".": "./module.ts"
   },
   "dependencies": {
-    "@pinia/nuxt": "^0.11.3",
-    "pinia": "^3.0.4",
+    "@pinia/nuxt": "^1.0.2",
+    "pinia": "^4.0.3",
     "pinia-plugin-persistedstate": "^4.7.1"
-  },
-  "devDependencies": {}
+  }
 }
