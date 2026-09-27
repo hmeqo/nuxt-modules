@@ -125,7 +125,7 @@ function _useQuery<T>(keyOrKeys: string | string[], serializer: Serializer<T>, o
       // 统一构造新 query 一次 replace：
       // - 清全部 keys（含别名）→ 避免残留别名在主 key 删除后复活旧值
       // - v === undefined / v === def → 不写（删 key / 回默认清理），VueUse 语义
-      // - 引擎的写队列表达不了删除/别名清理，这里补薄层（见 F1/F3/F4 review）
+      // - 引擎的写队列表达不了删除/别名清理，这里补薄层
       const query = { ...route.query }
       for (const key of keys) delete query[key]
       if (v !== undefined && v !== def) query[primary] = serializer.out(v)

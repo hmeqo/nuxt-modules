@@ -30,12 +30,10 @@ export default defineNuxtModule({
       cookieKey: options.detectBrowserLanguage?.cookieKey || 'language',
     }
 
-    // Add components
     addComponentsDir({
       path: resolver.resolve('./components'),
     })
 
-    // Add composables
     addImportsDir(resolver.resolve('./composables'))
 
     addPlugin(resolver.resolve('./plugins/i18n.ts'))

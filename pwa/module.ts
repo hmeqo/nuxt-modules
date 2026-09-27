@@ -36,7 +36,6 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Add components
     addComponentsDir({
       path: resolver.resolve('./components'),
     })

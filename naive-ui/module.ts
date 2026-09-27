@@ -12,9 +12,9 @@ export default defineNuxtModule({
     '@bg-dev/nuxt-naiveui': {
       defaults: <Partial<NaiveUiModuleOptions>>{
         colorModePreferenceCookieName: 'color-mode',
-        // @ts-expect-error unknown type
+        // @ts-expect-error
         colorModePreference: nuxt.options.naiveui?.colorModePreference || nuxt.options.colorMode.preference,
-        // @ts-expect-error unknown type
+        // @ts-expect-error
         themeConfig: defu(nuxt.options.naiveui?.themeConfig || modern, { shared: { common: { fontFamily: '' } } }),
       },
     },
@@ -23,20 +23,16 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Add components
     addComponentsDir({
       path: resolver.resolve('./components'),
     })
 
     addPlugin(resolver.resolve('./plugins/colorMode.ts'))
 
-    // Add composables
     addImportsDir(resolver.resolve('./composables'))
 
-    // Add utils
     addImportsDir(resolver.resolve('./utils'))
 
-    // Add stores
     addImportsDir(resolver.resolve('./stores'))
   },
 })

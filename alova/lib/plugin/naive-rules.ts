@@ -48,47 +48,37 @@ const codeGenOpenApiToNaiveRules = (schema: OpenAPISchemaObject): string => {
   const requiredSet = new Set(schema.required || [])
 
   for (const [propName, prop] of Object.entries(schema.properties as Record<string, OpenAPISchemaObject>)) {
-    // 暂时忽略引用类型，因无法确定内部约束
+    // 引用类型内部约束无法确定，跳过
     if (isRef(prop)) continue
 
     const rules: string[] = []
 
-    // 处理 Required
-    // 对应 naiveRulePresets.notUndefined()
     if (requiredSet.has(propName)) {
       rules.push(`naiveRulePresets.notUndefined()`)
     }
 
-    // 处理 Nullable
     // OpenAPI 默认为 nullable: false。如果不允许为 null，则添加 notNull 规则
-    // 对应 naiveRulePresets.notNull()
     if (!prop.type?.includes('null') && (prop as OpenAPIV3.SchemaObject).nullable !== true) {
       rules.push(`naiveRulePresets.notNull()`)
     }
 
-    // 处理长度 (Length)
-    // 对应 naiveRulePresets.length({ min, max })
     if (prop.minLength !== undefined || prop.maxLength !== undefined) {
       rules.push(`naiveRulePresets.length(${toObjStr({ min: prop.minLength, max: prop.maxLength })})`)
     }
 
-    // 处理数值范围 (Number)
     if (prop.minimum !== undefined || prop.maximum !== undefined) {
       rules.push(`naiveRulePresets.number(${toObjStr({ min: prop.minimum, max: prop.maximum })})`)
     }
 
-    // 处理正则 (Pattern)
     if (prop.pattern !== undefined) {
       rules.push(`naiveRulePresets.pattern(${toObjStr({ pattern: prop.pattern })})`)
     }
 
-    // 如果该字段有规则，则添加到对象字符串中
     if (rules.length > 0) {
       lines.push(`${propName}: [${rules.join(', ')}]`)
     }
   }
 
-  // 格式化输出
   return `{\n${lines.map((l) => `  ${l}`).join(',\n')}\n}`
 }
 

@@ -13,10 +13,8 @@ export default defineNuxtModule({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // Add composables
     addImportsDir(resolver.resolve('./composables'))
 
-    // Add stores
     addImportsDir(resolver.resolve('./stores'))
   },
 })

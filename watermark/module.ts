@@ -21,7 +21,6 @@ export default defineNuxtModule<ModuleOptions>({
       watermark: options,
     })
 
-    // Add components
     addComponentsDir({
       path: resolver.resolve('./components'),
     })
