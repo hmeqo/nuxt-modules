@@ -15,7 +15,8 @@ export const useThemeMode = defineCachedFn(() => {
   })
 
   const colorMode = computed({
-    get: () => nuxtColorMode.value as ColorMode,
+    get: () =>
+      colorModePreference.value === 'system' ? (nuxtColorMode.value as ColorMode) : colorModePreference.value,
     set: (v) => {
       colorModePreference.value = v
     },
