@@ -285,7 +285,7 @@ const buildInlineObjectExpr = (
  * 包装 defineFull + defineInit 函数对（对象体模式，body 为 `({ ... })` 中的属性行）。
  */
 const wrapFullInitExpr = (name: string, fullBody: string, initBody: string): string =>
-`
+  `
 export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = defineFull<Types.${getTypeName(name)}>(
   (notNull, input) => ({
 ${fullBody}
@@ -374,18 +374,11 @@ const buildRefForwardFn = (name: string, schema: OpenAPISchemaObject, ctx: Field
 /**
  * 路径 B：Discriminated union → 生成 if-else 链分发。
  */
-const buildDiscriminatedUnionFn = (
-  name: string,
-  du: DiscriminatedUnionResult,
-  ctx: FieldGenContext,
-): string => {
+const buildDiscriminatedUnionFn = (name: string, du: DiscriminatedUnionResult, ctx: FieldGenContext): string => {
   const { fieldName, variants: discriminatedVariants } = du
 
   // 生成单个变体的内层展开表达式
-  const buildVariantInnerExpr = (
-    { schema: variant, refName }: DiscriminatedVariant,
-    mode: FieldMode,
-  ): string => {
+  const buildVariantInnerExpr = ({ schema: variant, refName }: DiscriminatedVariant, mode: FieldMode): string => {
     if (refName) {
       return mode === 'partial' ? `${initFnName(refName)}(input)` : `${fullFnName(refName)}({ notNull })`
     }
@@ -395,8 +388,7 @@ const buildDiscriminatedUnionFn = (
   const buildVariantReturn = (dv: DiscriminatedVariant, mode: FieldMode) =>
     `{ ${fieldName}: ${JSON.stringify(dv.typeValue)}, ...${buildVariantInnerExpr(dv, mode)} }`
 
-  const buildCond = (dv: DiscriminatedVariant) =>
-    `input?.${fieldName} === ${JSON.stringify(dv.typeValue)}`
+  const buildCond = (dv: DiscriminatedVariant) => `input?.${fieldName} === ${JSON.stringify(dv.typeValue)}`
 
   return `
 export const ${fullFnName(name)}: DefineFullFn<Types.${getTypeName(name)}> = defineFull<Types.${getTypeName(name)}>(
@@ -491,7 +483,11 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
       } else if (schema.type === 'number' || schema.type === 'integer') {
         code += `\nexport const ${defaultFnName(name)} = (): number => ${getNonNullExpr(name, schema, ctx)}\n`
         dataTypeNames.push(name)
-      } else if (schema.type === 'object' && schema.additionalProperties && (!schema.properties || !Object.keys(schema.properties).length)) {
+      } else if (
+        schema.type === 'object' &&
+        schema.additionalProperties &&
+        (!schema.properties || !Object.keys(schema.properties).length)
+      ) {
         code += `\nexport const ${defaultFnName(name)} = (): Types.${getTypeName(name)} => ({})\n`
         dataTypeNames.push(name)
       }
