@@ -1,4 +1,4 @@
-import { createError, defineNuxtRouteMiddleware, navigateTo, onNuxtReady, useState } from 'nuxt/app'
+import { createError, defineNuxtRouteMiddleware, navigateTo, useState } from 'nuxt/app'
 import { useAuthAdapter } from '../composables/authAdapter'
 import type { AuthMeta, AuthStrategy } from '../types/auth'
 
@@ -19,17 +19,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!meta) return
 
   const adapter = useAuthAdapter()
-  const isAuthed = adapter.isAuthenticated()
 
   const authInit = useState('authInit', () => false)
   if (import.meta.client && !authInit.value) {
     authInit.value = true
-    onNuxtReady(() => {
-      adapter.init().then(() => {
-        if (!adapter.isAuthenticated()) navigateTo(adapter.url.login)
-      })
-    })
+    try {
+      await adapter.init()
+    } catch {
+      // 适配器抛错不阻断导航，按现有状态继续
+    }
   }
+
+  const isAuthed = adapter.isAuthenticated()
 
   if (meta.redirect) {
     if (meta.redirect.authed && isAuthed) return navigateTo(meta.redirect.authed)

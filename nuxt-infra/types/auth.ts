@@ -5,6 +5,7 @@ export interface AuthAdapter {
     login: RouteLocationAsString
     home: RouteLocationAsString
   }
+  /** 校验并落地会话状态 */
   init(): Promise<void>
   isAuthenticated(): boolean
   getPermissions(): string[] | undefined
