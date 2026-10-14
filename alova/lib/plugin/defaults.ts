@@ -438,7 +438,7 @@ const buildUnionDefaultFn = (name: string, schema: OpenAPISchemaObject, ctx: Fie
   return buildFallbackUnionFn(name, schema, ctx)
 }
 
-const checkRequriedImports = (ctx: FieldGenContext) => {
+const checkRequiredImports = (ctx: FieldGenContext) => {
   let code = ''
   const { requiredUtils, requiredImports } = ctx
   if (requiredUtils.size) {
@@ -446,7 +446,7 @@ const checkRequriedImports = (ctx: FieldGenContext) => {
 `
   }
   if (requiredImports.has('uuidv4')) {
-    code += `import { uuidv4 } from 'uuid'
+    code += `import { v4 as uuidv4 } from 'uuid'
 `
   }
   return code
@@ -483,6 +483,10 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
       } else if (schema.type === 'number' || schema.type === 'integer') {
         code += `\nexport const ${defaultFnName(name)} = (): number => ${getNonNullExpr(name, schema, ctx)}\n`
         dataTypeNames.push(name)
+      } else if (schema.type === 'string' || schema.type === 'boolean') {
+        // 标量别名也必须注册成数据类型，否则 $ref 到它的字段会发不存在的 $fullXxx / $initXxx
+        code += `\nexport const ${defaultFnName(name)} = (): Types.${getTypeName(name)} => ${getNonNullExpr(name, schema, ctx)}\n`
+        dataTypeNames.push(name)
       } else if (
         schema.type === 'object' &&
         schema.additionalProperties &&
@@ -506,7 +510,7 @@ export const defaultsPlugin = createPlugin((outputDir: string, opts?: DefaultsPl
       }
     }
 
-    code = runtimeHelperCode(checkRequriedImports(ctx)) + code
+    code = runtimeHelperCode(checkRequiredImports(ctx)) + code
 
     writeGeneratedFile(outputDir, 'defaults.ts', code)
   },

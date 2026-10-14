@@ -30,6 +30,8 @@ export const createAlovaHandlers = <
     onError: <E, T>(error: E, request: Req, data: T) => {
       emit('request:unknown_error', { request, error, data })
       emit('request:error', { request, error, data })
+      // alova 把 onError 的返回值当成"已恢复"，必须抛出才能让请求保持失败
+      throw error
     },
     onComplete: (request: Req) => {
       emit('request:complete', { request })
